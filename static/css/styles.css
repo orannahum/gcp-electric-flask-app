@@ -1,0 +1,197 @@
+/* Base styles */
+body {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+/* Typography */
+h1, h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.hebrew-title {
+    text-align: right;
+    margin-bottom: 10px;
+}
+
+.english-title {
+    margin-bottom: 30px;
+}
+
+/* Layout containers */
+.results-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.client-info,
+.plans-comparison,
+.charts,
+.debug-output,
+form,
+.chart-container,
+pre {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+/* Form elements */
+form {
+    margin-bottom: 30px;
+}
+
+input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* Tables - General */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+/* Final Plans Table Specific */
+.plans-table {
+    width: 100%;
+    font-size: 14px;
+    margin: 20px 0;
+}
+
+.plans-table th,
+.plans-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.plans-table th {
+    background-color: #f4f4f4;
+}
+
+.plans-table tr:hover {
+    background-color: #f8f8f8;
+}
+
+.plans-table .current-plan-row {
+    background-color: #e6f3ff;
+}
+
+.plans-table .current-plan {
+    font-weight: bold;
+}
+
+.plans-table .positive-savings {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.plans-table .negative-savings {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Charts */
+.chart-container {
+    height: 400px;
+    margin: 20px 0;
+}
+
+.chart-wrapper {
+    margin-bottom: 40px;
+}
+
+.chart-wrapper:last-child {
+    margin-bottom: 0;
+}
+
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Error Messages */
+.error-message {
+    color: #dc3545;
+    padding: 10px;
+    border: 1px solid #dc3545;
+    border-radius: 4px;
+    margin: 10px 0;
+    background-color: #fff;
+}
+
+/* Debug Output */
+.debug-output pre {
+    background: #f5f5f5;
+    overflow-x: auto;
+}
+
+pre {
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Table Container */
+#finalPlansTable {
+    margin: 20px 0;
+    overflow-x: auto;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .results-container {
+        padding: 10px;
+    }
+    
+    .plans-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    body {
+        padding: 10px;
+    }
+}
+

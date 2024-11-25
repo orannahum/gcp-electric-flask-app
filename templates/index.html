@@ -1,20 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>CSV File Upload</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV Upload</title>
+    <!-- Include required libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
+    <!-- Link to your CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Upload a CSV File</h1>
+    <!-- Hebrew and English titles -->
+    <h1 class="hebrew-title">מחשבון מסלולי חשמל</h1>
+    <h1 class="english-title">CSV File Upload</h1>
+
+    <!-- File upload form -->
     <form action="/upload" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".csv">
-        <button type="submit">Upload</button>
+        <input type="file" name="file" accept=".csv" required>
+        <button type="submit">Generate Report</button>
     </form>
 
+    <!-- Display results if available -->
     {% if results %}
-    <h2>Results:</h2>
-    <pre>{{ results | tojson(indent=4) }}</pre>
+    <div class="results-container">
+        <!-- Client Information Section -->
+        <section class="client-info">
+            <h2>Client Information</h2>
+            <table>
+                <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                </tr>
+                {% for key, value in results.client_info.items() %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endfor %}
+                {% if results.client_plan_en %}
+                <tr>
+                    <td>Current Plan</td>
+                    <td>{{ results.client_plan_en }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="charts">
+            <!-- Daily consumption chart -->
+            <div class="chart-wrapper">
+                <h2>Daily Consumption</h2>
+                <div class="chart-container" style="position: relative; height:400px; width:100%; margin: 20px 0;">
+                    <canvas id="dailyConsumptionChart"></canvas>
+                </div>
+                <!-- Hidden data element for daily chart -->
+                <script type="application/json" id="dailyData">
+                    {{ results.daily_sum | tojson | safe }}
+                </script>
+            </div>
+
+            <!-- Hourly consumption chart -->
+            <div class="chart-wrapper">
+                <h2>Hourly Consumption Chart</h2>
+                <div class="chart-container" style="position: relative; height:400px; width:100%; margin: 20px 0;">
+                    <canvas id="hourlyConsumptionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Savings time series chart -->
+            <div class="chart-wrapper">
+                <h2>Savings Time Series</h2>
+                <div class="chart-container" style="position: relative; height:400px; width:100%; margin: 20px 0;">
+                    <canvas id="savingsTimeSeriesChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Plans Section -->
+        <section class="plans-comparison">
+            <h2>Final Plans Comparison</h2>
+            <div id="finalPlansTable"></div>
+            
+            <!-- Hidden data elements for plans table -->
+            <script type="application/json" id="plansData">
+                {{ results.final_top_plans | tojson | safe }}
+            </script>
+            <script type="application/json" id="clientPlan">
+                {{ results.client_plan_en | tojson | safe }}
+            </script>
+        </section>
+
+        <!-- Debug section -->
+        <section class="debug-output">
+            <h2>Full Output</h2>
+            <pre>{{ results | tojson(indent=4) }}</pre>
+        </section>
+
+        <!-- Include your JavaScript -->
+        <script src="{{ url_for('static', filename='js/final_plans_table.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/daily_sum_time_series.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/hourly_bin_chart.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/savings_time_series.js') }}"></script>
+    </div>
     {% endif %}
 </body>
 </html>

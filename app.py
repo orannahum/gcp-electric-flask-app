@@ -3,7 +3,9 @@ import pandas as pd
 import numpy as np
 import os
 
-app = Flask(__name__, template_folder='templates', static_folder='public')
+app = Flask(__name__, template_folder='templates', 
+            static_url_path='/static',
+            static_folder='static')
 
 
 def read_df_all_and_df(uploaded_file_path=None, uploaded_file_df=None):
@@ -238,7 +240,7 @@ def upload_file():
         ## add plans
         results_dict["relevant_plans"] = plans
         # Hourly aggregation
-        uploaded_file_df = uploaded_file_df.iloc[-100:]
+        uploaded_file_df = uploaded_file_df.iloc[-10000:]
         df_hourly = uploaded_file_df.resample('h').sum()
         df_hourly_agg = df_hourly.groupby(df_hourly.index.hour).mean()
         results_dict['hourly_agg'] = df_hourly_agg.to_dict(orient='index')
@@ -248,6 +250,11 @@ def upload_file():
         uploaded_file_df_cumsum = uploaded_file_df.cumsum()
         uploaded_file_df_cumsum.index = uploaded_file_df_cumsum.index.strftime('%Y-%m-%d %H:%M:%S')
         results_dict['price_sumcum'] = uploaded_file_df_cumsum.to_dict(orient='index')
+        ## do daily aggregation
+        df_daily = uploaded_file_df[['Consumption (kWh)']].resample('D').sum()
+        # Convert index to string format for JSON serialization
+        df_daily.index = df_daily.index.strftime('%Y-%m-%d')
+        results_dict['daily_sum'] = df_daily.to_dict()['Consumption (kWh)']
         ## add diff between client plan and other plans
         df_diff_saving = pd.DataFrame()
         for plan in plans:
@@ -262,7 +269,7 @@ def upload_file():
         final_series_plans.index.name = 'plan'
         final_series_plans.name = 'price(ILS)'
         final_df_plans = final_series_plans.reset_index()
-        results_dict['final_df_plans'] = final_df_plans.to_dict(orient='index')
+        results_dict['final_top_plans'] = final_df_plans.to_dict(orient='index')
     except Exception as e:
         return jsonify({"error": f"Error processing file: {e}"}), 500
 
@@ -270,7 +277,9 @@ def upload_file():
     return render_template('index.html', results=results_dict)
 
 
+
+
 if __name__ == "__main__":
     # Use the PORT environment variable for Cloud Run
     port = int(os.environ.get("PORT", 5001))  # Default to 5001 if not set
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)
