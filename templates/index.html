@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>CSV File Upload</title>
+    <title>העלאת קובץ CSV</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Include required libraries -->
@@ -14,12 +14,12 @@
 <body>
     <!-- Hebrew and English titles -->
     <h1 class="hebrew-title">מחשבון מסלולי חשמל</h1>
-    <h1 class="english-title">CSV File Upload</h1>
+    <h1 class="english-title">העלאת קובץ CSV</h1>
 
     <!-- File upload form -->
     <form action="/upload" method="POST" enctype="multipart/form-data">
         <input type="file" name="file" accept=".csv" required>
-        <button type="submit">Generate Report</button>
+        <button type="submit">הפק דוח</button>
     </form>
 
     <!-- Display results if available -->
@@ -27,11 +27,11 @@
     <div class="results-container">
         <!-- Client Information Section -->
         <section class="client-info">
-            <h2>Client Information</h2>
+            <h2>פרטי לקוח</h2>
             <table>
                 <tr>
-                    <th>Key</th>
-                    <th>Value</th>
+                    <th>מפתח</th>
+                    <th>ערך</th>
                 </tr>
                 {% for key, value in results.client_info.items() %}
                 <tr>
@@ -39,10 +39,10 @@
                     <td>{{ value }}</td>
                 </tr>
                 {% endfor %}
-                {% if results.client_plan_en %}
+                {% if results.hevrat_hashmal_plan_name %}
                 <tr>
-                    <td>Current Plan</td>
-                    <td>{{ results.client_plan_en }}</td>
+                    <td>hevrat_hashmal_plan_name</td>
+                    <td>{{ results.hevrat_hashmal_plan_name }}</td>
                 </tr>
                 {% endif %}
             </table>
@@ -52,7 +52,7 @@
         <section class="charts">
             <!-- Daily consumption chart -->
             <div class="chart-wrapper">
-                <h2>Daily Consumption</h2>
+                <h2>צריכה יומית</h2>
                 <div class="chart-container" style="position: relative; height:400px; width:100%; margin: 20px 0;">
                     <canvas id="dailyConsumptionChart"></canvas>
                 </div>
@@ -64,7 +64,7 @@
 
             <!-- Hourly consumption chart -->
             <div class="chart-wrapper">
-                <h2>Hourly Consumption Chart</h2>
+                <h2>תרשים צריכה שעתית</h2>
                 <div class="chart-container" style="position: relative; height:400px; width:100%; margin: 20px 0;">
                     <canvas id="hourlyConsumptionChart"></canvas>
                 </div>
@@ -72,7 +72,7 @@
 
             <!-- Savings time series chart -->
             <div class="chart-wrapper">
-                <h2>Savings Time Series</h2>
+                <h2>לעומת חברת חשמל חיסכון</h2>
                 <div class="chart-container" style="position: relative; height:400px; width:100%; margin: 20px 0;">
                     <canvas id="savingsTimeSeriesChart"></canvas>
                 </div>
@@ -81,7 +81,7 @@
 
         <!-- Final Plans Section -->
         <section class="plans-comparison">
-            <h2>Final Plans Comparison</h2>
+            <h2>השוואת תכניות סופית</h2>
             <div id="finalPlansTable"></div>
             
             <!-- Hidden data elements for plans table -->
@@ -89,13 +89,13 @@
                 {{ results.final_top_plans | tojson | safe }}
             </script>
             <script type="application/json" id="clientPlan">
-                {{ results.client_plan_en | tojson | safe }}
+                {{ results.hevrat_hashmal_plan_name | tojson | safe }}
             </script>
         </section>
 
         <!-- Debug section -->
         <section class="debug-output">
-            <h2>Full Output</h2>
+            <h2>פלט מלא</h2>
             <pre>{{ results | tojson(indent=4) }}</pre>
         </section>
 

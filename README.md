@@ -1,8 +1,8 @@
 # gcp-electric-flask-app
 
-1. Pull the image:
+1. Build the image:
 
-`docker pull oranne5/flask-app:v7`
+`docker build --platform linux/amd64 -t flask-app:v* .`
 
 
 2. Run the Docker Container:
