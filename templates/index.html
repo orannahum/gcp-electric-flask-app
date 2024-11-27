@@ -1,110 +1,207 @@
 <!DOCTYPE html>
-<html lang="en">
+<html dir="rtl" lang="he">
 <head>
-    <title>העלאת קובץ CSV</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Include required libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
-    <!-- Link to your CSS -->
+    <title>מחשבון מסלולי חשמל</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <style>
+        .chart-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 400px;
+            margin: 20px auto;
+            position: relative;
+        }
+        .results-container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        #finalPlansTable {
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+        .chart-wrapper {
+            margin-bottom: 40px;
+        }
+        form {
+            margin: 20px auto;
+            max-width: 600px;
+            padding: 20px;
+            text-align: center;
+        }
+        .error {
+            color: red;
+            margin: 10px 0;
+        }
+        .hidden {
+            display: none;
+        }
+        button:disabled {
+            background-color: #cccccc !important;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-    <!-- Hebrew and English titles -->
     <h1 class="hebrew-title">מחשבון מסלולי חשמל</h1>
-    <h1 class="english-title">העלאת קובץ CSV</h1>
+    <h2 class="english-title">העלאת קובץ CSV</h2>
 
-    <!-- File upload form -->
-    <form action="/upload" method="POST" enctype="multipart/form-data">
+    <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm">
         <input type="file" name="file" accept=".csv" required>
-        <button type="submit">הפק דוח</button>
+        <button type="submit" id="submitBtn">הפק דוח</button>
     </form>
 
-    <!-- Display results if available -->
-    {% if results %}
-    <div class="results-container">
-        <!-- Client Information Section -->
-        <section class="client-info">
-            <h2>פרטי לקוח</h2>
-            <table>
-                <tr>
-                    <th>מפתח</th>
-                    <th>ערך</th>
-                </tr>
-                {% for key, value in results.client_info.items() %}
-                <tr>
-                    <td>{{ key }}</td>
-                    <td>{{ value }}</td>
-                </tr>
-                {% endfor %}
-                {% if results.hevrat_hashmal_plan_name %}
-                <tr>
-                    <td>hevrat_hashmal_plan_name</td>
-                    <td>{{ results.hevrat_hashmal_plan_name }}</td>
-                </tr>
-                {% endif %}
-            </table>
-        </section>
+    <div id="cooldownMessage" style="display: none; color: red;"></div>
 
-        <!-- Charts Section -->
-        <section class="charts">
-            <!-- Daily consumption chart -->
-            <div class="chart-wrapper">
-                <h2>צריכה יומית</h2>
-                <div class="chart-container" style="position: relative; height:400px; width:100%; margin: 20px 0;">
-                    <canvas id="dailyConsumptionChart"></canvas>
+    {% if results %}
+    <!-- Hidden data elements -->
+    <div id="dailyData" style="display: none;">{{ results.daily_sum | tojson | safe }}</div>
+    <div id="plansData" style="display: none;">{{ results.final_top_plans | tojson | safe }}</div>
+    <div id="clientPlan" style="display: none;">{{ results.hevrat_hashmal_plan_name | tojson | safe }}</div>
+
+    <div class="results-container">
+        <div class="section client-info">
+
+            <h2>פרטי לקוח</h2>
+
+            <div>
+                <div>
+                    <span>לקוח:</span>
+                    <span>{{ results.client_info.name }}</span>
                 </div>
-                <!-- Hidden data element for daily chart -->
-                <script type="application/json" id="dailyData">
-                    {{ results.daily_sum | tojson | safe }}
-                </script>
+                <div>
+                    <span>כתובת:</span>
+                    <span>{{ results.client_info.address }}</span>
+                </div>
+                <div>
+                    <span>קוד מונה:</span>
+                    <span>{{ results.client_info.meter_code }}</span>
+                </div>
+                <div>
+                    <span>מספר מונה:</span>
+                    <span>{{ results.client_info.meter_number }}</span>
+                </div>
+                {% if results.hevrat_hashmal_plan_name %}
+                <div>
+                    <span>תכנית חברת חשמל:</span>
+                    <span>{{ results.hevrat_hashmal_plan_name }}</span>
+                </div>
+                {% endif %}
             </div>
 
-            <!-- Hourly consumption chart -->
+        <div class="section charts">
+            <div class="chart-wrapper">
+                <h2>צריכה יומית</h2>
+                <div class="chart-container">
+                    <canvas id="dailyConsumptionChart"></canvas>
+                </div>
+            </div>
+
             <div class="chart-wrapper">
                 <h2>תרשים צריכה שעתית</h2>
-                <div class="chart-container" style="position: relative; height:400px; width:100%; margin: 20px 0;">
+                <div class="chart-container">
                     <canvas id="hourlyConsumptionChart"></canvas>
                 </div>
             </div>
 
-            <!-- Savings time series chart -->
             <div class="chart-wrapper">
-                <h2>לעומת חברת חשמל חיסכון</h2>
-                <div class="chart-container" style="position: relative; height:400px; width:100%; margin: 20px 0;">
+                <h2>חיסכון לעומת חברת חשמל</h2>
+                <div class="chart-container">
                     <canvas id="savingsTimeSeriesChart"></canvas>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Final Plans Section -->
-        <section class="plans-comparison">
+        <div class="section plans-comparison">
             <h2>השוואת תכניות סופית</h2>
             <div id="finalPlansTable"></div>
-            
-            <!-- Hidden data elements for plans table -->
-            <script type="application/json" id="plansData">
-                {{ results.final_top_plans | tojson | safe }}
-            </script>
-            <script type="application/json" id="clientPlan">
-                {{ results.hevrat_hashmal_plan_name | tojson | safe }}
-            </script>
-        </section>
+        </div>
 
-        <!-- Debug section -->
-        <section class="debug-output">
+        <div class="section debug-output">
             <h2>פלט מלא</h2>
             <pre>{{ results | tojson(indent=4) }}</pre>
-        </section>
-
-        <!-- Include your JavaScript -->
-        <script src="{{ url_for('static', filename='js/final_plans_table.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/daily_sum_time_series.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/hourly_bin_chart.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/savings_time_series.js') }}"></script>
+        </div>
     </div>
+
+    <!-- Initialize charts after results are loaded -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultsData = {{ results | tojson | safe }};
+            
+            try {
+                if (typeof initDailySumTimeSeries === 'function') {
+                    initDailySumTimeSeries(resultsData);
+                }
+                if (typeof initHourlyBinChart === 'function') {
+                    initHourlyBinChart(resultsData.hourly_agg);
+                }
+                if (typeof initSavingsTimeSeries === 'function') {
+                    initSavingsTimeSeries(resultsData.diff_saving);
+                }
+                if (typeof initFinalPlansTable === 'function') {
+                    initFinalPlansTable(resultsData);
+                }
+            } catch (error) {
+                console.error('Error initializing visualizations:', error);
+            }
+        });
+    </script>
     {% endif %}
+
+    <!-- Cooldown Script -->
+    <script>
+        let lastSubmitTime = 0;
+
+        function updateButton() {
+        const submitBtn = document.getElementById('submitBtn');
+        const cooldownMsg = document.getElementById('cooldownMessage');
+        const now = Date.now() / 1000;
+        const elapsed = now - lastSubmitTime;
+        
+        if (lastSubmitTime && elapsed < 10) {
+            const remaining = Math.ceil(10 - elapsed);
+            submitBtn.disabled = true;
+            cooldownMsg.style.display = 'block';
+            cooldownMsg.textContent = `נא להמתין ${remaining} שניות לפני בקשה נוספת`;
+        } else {
+            submitBtn.disabled = false;
+            cooldownMsg.style.display = 'none';
+        }
+    }
+
+        document.getElementById('uploadForm').addEventListener('submit', function() {
+            lastSubmitTime = Date.now() / 1000;
+            localStorage.setItem('lastSubmitTime', lastSubmitTime);
+        });
+
+        const storedTime = localStorage.getItem('lastSubmitTime');
+        if (storedTime) {
+            lastSubmitTime = parseFloat(storedTime);
+        }
+
+        updateButton();
+        setInterval(updateButton, 1000);
+    </script>
+
+    <!-- Chart Scripts -->
+    <script src="{{ url_for('static', filename='js/daily_sum_time_series.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/final_plans_table.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hourly_bin_chart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/savings_time_series.js') }}"></script>
 </body>
 </html>

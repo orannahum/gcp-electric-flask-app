@@ -2,4 +2,4 @@ pandas
 numpy
 flask
 pandas  
-orjson
+Flask-Limiter
