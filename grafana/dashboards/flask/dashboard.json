@@ -141,7 +141,7 @@
           "refId": "A"
         }
       ],
-      "title": "Error Rate",
+      "title": "Error Rate of Creating Reports(errors / (success + errors))",
       "type": "gauge"
     },
     {

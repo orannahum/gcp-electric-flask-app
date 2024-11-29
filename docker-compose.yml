@@ -3,6 +3,8 @@ version: '3'
 services:
   flask-app:
     build: .
+    # image: flask-app:v12
+    # image: gcr.io/electric-flask-app/flask-app:v12
     ports:
       - "5001:5001"
     environment:
