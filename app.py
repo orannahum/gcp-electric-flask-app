@@ -7,6 +7,7 @@ from config import price_of_kWh, plans, hevrat_hashmal_plan_name, plans_translat
 import time
 import logging
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST, CollectorRegistry
+import psutil
 
 # Configure logging
 logging.basicConfig(
@@ -33,14 +34,19 @@ report_button_clicks = Counter('app_report_button_clicks_total', 'Total number o
 requests_last_hour = Gauge('app_requests_last_hour', 'Requests in the last hour', registry=registry)
 success_last_hour = Gauge('app_success_last_hour', 'Successful requests in the last hour', registry=registry)
 errors_last_hour = Gauge('app_errors_last_hour', 'Failed requests in the last hour', registry=registry)
-error_rate = Gauge('app_error_rate', 'Error rate as percentage of total requests', registry=registry)
+error_rate_create_reports = Gauge('app_error_rate_create_reports', 'Error rate as percentage of total report reports created', registry=registry)
 avg_latency = Gauge('app_average_latency_last_hour', 'Average latency in the last hour', registry=registry)
+last_latency = Gauge('app_last_latency_seconds', 'Last request latency in seconds', registry=registry)
+cpu_usage = Gauge('app_cpu_usage_percent', 'CPU usage percentage', registry=registry)
+memory_usage = Gauge('app_memory_usage_percent', 'Memory usage percentage', registry=registry)
+reports_last_hour = Gauge('app_reports_generated_last_hour', 'Successful reports generated in the last hour', registry=registry)
 
 # Dictionary to store timestamps and latencies of requests
 request_times = {
     'total': [],
     'success': [],
-    'error': []
+    'error': [],
+    'reports': []
 }
 request_latencies = []
 
@@ -82,8 +88,8 @@ def update_metrics():
     requests_last_hour.set(len(request_times['total']))
     success_last_hour.set(len(request_times['success']))
     errors_last_hour.set(len(request_times['error']))
+    reports_last_hour.set(len(request_times['reports']))
     
-    # Calculate and update average latency
     if request_latencies:
         average_latency = sum(lat for _, lat in request_latencies) / len(request_latencies)
         logger.debug(f"Updated average latency: {average_latency:.4f} seconds")
@@ -92,23 +98,38 @@ def update_metrics():
         logger.debug("No latency data available, setting to 0")
         avg_latency.set(0)
     
-    # Calculate and update error rate
-    success_count = len(request_times['success'])
+    success_reports_count = len(request_times['reports'])
     error_count = len(request_times['error'])
-    current_error_rate = calculate_error_rate(success_count, error_count)
-    error_rate.set(current_error_rate)
+    current_error_rate = calculate_error_rate(success_reports_count, error_count)
+    error_rate_create_reports.set(current_error_rate)
     logger.debug("Metrics update completed")
+
+def update_system_metrics():
+    """Update CPU and memory usage metrics."""
+    try:
+        cpu_percent = psutil.cpu_percent(interval=None)
+        memory_info = psutil.virtual_memory()
+        memory_percent = memory_info.percent
+
+        cpu_usage.set(cpu_percent)
+        memory_usage.set(memory_percent)
+
+        logger.debug(f"CPU usage updated to {cpu_percent}%")
+        logger.debug(f"Memory usage updated to {memory_percent}%")
+    except Exception as e:
+        logger.error(f"Error updating system metrics: {str(e)}", exc_info=True)
 
 class LatencyTimer:
     def __enter__(self):
         self.start = time.time()
         logger.debug("Started latency timer")
         return self
-    
+
     def __exit__(self, *args):
         self.duration = time.time() - self.start
         request_latencies.append((time.time(), self.duration))
-        logger.debug(f"Request completed in {self.duration:.4f} seconds")
+        last_latency.set(self.duration)
+        logger.debug(f"Updated last_latency metric to {self.duration:.4f} seconds")
         update_metrics()
 
 @app.route('/', methods=['GET'])
@@ -121,7 +142,6 @@ def index():
     with LatencyTimer(), request_duration.time():
         try:
             logger.info("Rendering index template")
-            requests_success.inc()
             request_times['success'].append(current_time)
             return render_template('index.html')
         except Exception as e:
@@ -136,16 +156,17 @@ def upload_file():
     current_time = time.time()
     requests_total.inc()
     request_times['total'].append(current_time)
+    report_button_clicks.inc()
 
-    try:
-        file = request.files['file']
-        if not file:
-            logger.warning("No file provided in upload request")
-            requests_error.inc()
-            request_times['error'].append(current_time)
-            return redirect(url_for('index', error="נא לבחור קובץ"))
-
+    with LatencyTimer(), request_duration.time():
         try:
+            file = request.files.get('file')
+            if not file:
+                logger.warning("No file provided in upload request")
+                requests_error.inc()
+                request_times['error'].append(current_time)
+                return render_template('index.html', error="נא לבחור קובץ")
+
             logger.info("Reading CSV file")
             file_df = pd.read_csv(
                 file,
@@ -154,48 +175,45 @@ def upload_file():
                 usecols=[0, 1, 2],
                 skip_blank_lines=True
             )
-            
+
             logger.info(f"CSV file read successfully. Shape: {file_df.shape}")
-            logger.info("Processing CSV data")
-            
             results_dict = process_csv_data(file_df, plans, price_of_kWh, hevrat_hashmal_plan_name)
             logger.info(f"Results keys: {results_dict.keys()}")
-            
-            report_button_clicks.inc()
+
             logger.info("File processing completed successfully")
             requests_success.inc()
             request_times['success'].append(current_time)
-            
+            # Only increment reports metric on successful processing
+            request_times['reports'].append(current_time)
+            logger.info("Incremented successful report metric")
+
             return render_template('index.html', 
-                                results=results_dict,
-                                plans_translate=plans_translate_to_hebrew)
-            
+                                   results=results_dict,
+                                   plans_translate=plans_translate_to_hebrew)
+
         except pd.errors.EmptyDataError:
             logger.error("Empty CSV file uploaded")
             requests_error.inc()
             request_times['error'].append(current_time)
             return render_template('index.html', error="הקובץ ריק")
+
         except pd.errors.ParserError:
             logger.error("CSV parsing error")
             requests_error.inc()
             request_times['error'].append(current_time)
             return render_template('index.html', error="הפורמט של הקובץ לא מתאים")
+
         except Exception as e:
             logger.error(f"Unexpected error processing file: {str(e)}", exc_info=True)
             requests_error.inc()
             request_times['error'].append(current_time)
-            return render_template('index.html', error="הפורמט של הקובץ לא מתאים")
-
-    except Exception as e:
-        logger.error(f"General error in upload endpoint: {str(e)}", exc_info=True)
-        requests_error.inc()
-        request_times['error'].append(current_time)
-        return render_template('index.html', error="אירעה שגיאה בעיבוד הקובץ")
+            return render_template('index.html', error="אירעה שגיאה בעיבוד הקובץ")
 
 @app.route('/metrics', methods=['GET'])
 def metrics():
     logger.info("Metrics endpoint accessed")
     update_metrics()
+    update_system_metrics()
     return generate_latest(registry), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
 if __name__ == "__main__":
