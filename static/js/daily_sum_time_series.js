@@ -1,22 +1,22 @@
-// Get the data from the results
+// קבלת הנתונים מהתוצאות
 const dailyData = JSON.parse(document.getElementById('dailyData').textContent);
 
-// Process the data for Chart.js
+// עיבוד הנתונים עבור Chart.js
 const dailyConsumptionData = Object.entries(dailyData).map(([date, value]) => ({
     x: date,
     y: value
 }));
 
-// Sort the data by date
+// מיון הנתונים לפי תאריך
 dailyConsumptionData.sort((a, b) => moment(a.x).valueOf() - moment(b.x).valueOf());
 
-// Create the chart
+// יצירת התרשים
 const ctx = document.getElementById('dailyConsumptionChart').getContext('2d');
 new Chart(ctx, {
     type: 'line',
     data: {
         datasets: [{
-            label: 'Daily Consumption (kWh)',
+            label: 'צריכה יומית (קוט"ש)',
             data: dailyConsumptionData,
             borderColor: 'rgb(75, 192, 192)',
             backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -29,13 +29,12 @@ new Chart(ctx, {
         maintainAspectRatio: false,
         plugins: {
             title: {
-                display: true,
-                text: 'Daily Energy Consumption'
+                display: false  // Changed from true to false to remove the title
             },
             tooltip: {
                 callbacks: {
                     label: function(context) {
-                        return `Consumption: ${context.parsed.y.toFixed(2)} kWh`;
+                        return `צריכה: ${context.parsed.y.toFixed(2)} קוט"ש`;
                     }
                 }
             }
@@ -46,19 +45,19 @@ new Chart(ctx, {
                 time: {
                     unit: 'day',
                     displayFormats: {
-                        day: 'YYYY-MM-DD'
+                        day: 'DD-MM-YYYY'
                     }
                 },
                 title: {
                     display: true,
-                    text: 'Date'
+                    text: 'תאריך'
                 }
             },
             y: {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: 'Consumption (kWh)'
+                    text: 'צריכה (קוט"ש)'
                 }
             }
         }

@@ -3,3 +3,4 @@ numpy
 flask
 pandas  
 Flask-Limiter
+prometheus-client==0.14.1

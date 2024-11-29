@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Script started');
     try {
+        // Get translations from the hidden element
+        const translationsElement = document.getElementById('plansTranslations');
+        const plans_translate_to_hebrew = JSON.parse(translationsElement.textContent);
+        
         // Get the data elements with the correct IDs from the HTML
         const plansDataElement = document.getElementById('plansData');
         const clientPlanElement = document.getElementById('clientPlan');
@@ -12,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
             tableContainer: !!tableContainer
         });
 
-        if (!plansDataElement || !clientPlanElement || !tableContainer) {
+        if (!plansDataElement || !clientPlanElement || !tableContainer || !translationsElement) {
             throw new Error('Required elements not found');
         }
 
@@ -27,7 +31,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .filter(item => item && item.plan && item.plan !== "Consumption (kWh)")
             .map(item => ({
                 plan: item.plan,
-                price: item['price(ILS)']  // Match the exact key from your data
+                planHebrew: plans_translate_to_hebrew[item.plan] || item.plan, // Use Hebrew name if available
+                price: item['price(ILS)']
             }))
             .sort((a, b) => a.price - b.price);
 
@@ -36,15 +41,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create table
         const table = document.createElement('table');
         table.className = 'plans-table';
+        table.dir = 'rtl'; // Set direction to right-to-left for Hebrew
 
         // Add header
         const header = `
             <thead>
                 <tr>
-                    <th>Rank</th>
-                    <th>Plan Name</th>
-                    <th>Price (₪)</th>
-                    <th>Savings vs. Current Plan (₪)</th>
+                    <th>דירוג</th>
+                    <th>שם תוכנית</th>
+                    <th>מחיר (₪)</th>
+                    <th>חיסכון לעומת התוכנית הנוכחית (₪)</th>
                 </tr>
             </thead>
         `;
@@ -72,10 +78,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             row.innerHTML = `
                 <td>${index + 1}</td>
-                <td class="${isCurrentPlan ? 'current-plan' : ''}">${plan.plan}</td>
+                <td class="${isCurrentPlan ? 'current-plan' : ''}">${plan.planHebrew}</td>
                 <td>${plan.price.toFixed(2)}</td>
                 <td class="${savings > 0 ? 'positive-savings' : savings < 0 ? 'negative-savings' : ''}">${
-                    currentPlanPrice ? savings.toFixed(2) : 'N/A'
+                    currentPlanPrice ? savings.toFixed(2) : 'לא זמין'
                 }</td>
             `;
             tbody.appendChild(row);
@@ -93,9 +99,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (tableContainer) {
             tableContainer.innerHTML = `
                 <div class="error-message">
-                    Error creating table: ${error.message}
+                    שגיאה ביצירת הטבלה: ${error.message}
                     <br>
-                    Please check the browser console for more details.
+                    אנא בדקו את קונסול הדפדפן לפרטים נוספים.
                 </div>
             `;
         }

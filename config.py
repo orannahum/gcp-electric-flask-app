@@ -96,3 +96,20 @@ plans = {
       "more_services_that_needed": ["next_double"]
     }
 }
+
+
+plans_translate_to_hebrew = {"plan_hevrat_hashmal1": "בלי מסלול-חברת חשמל",
+"plan_cellcom1": "סלקום אנרג'י -חוסכים למשפחה",
+"plan_cellcom2": "סלקום אנרג'י-חוסכים ביום",
+"plan_cellcom3": "סלקום אנרג'י -חוסכים בלילה",
+"plan_cellcom4": "סלקום אנרג'י -חוסכים קבוע",
+"plan_paz1": "פזגז -הנחה 24/7",
+"plan_electra_power1": "אלקטרה פאוור -מסלול POWER",
+"plan_electra_power2": "אלקטרה פאוור -מסלול הייטק",
+"plan_electra_power3": "אלקטרה פאוור -מסלול לילה",
+"plan_hot1": "הוט אנרג'י -חוסכים 24/7",
+"plan_hot2": "הוט אנרג'י -חוסכים ביום",
+"plan_hot3": "הוט אנרג'י -חוסכים בלילה",
+"plan_hot4": "הוט אנרג'י -חוסכים קבוע HOT- מסלול ללקוחות הוט טריפל בלבד",
+"plan_hot5": "הוט אנרג'י - e- triple- הנחה ללקוחות HOT טריפל ומובייל בלבד",
+"plan_hot6": "הוט אנרג'י -חוסכים קבוע NEXT- מסלול ללקוחות דאבל NEXT בלבד"}

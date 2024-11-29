@@ -13,8 +13,16 @@
 
 4. Run the Docker Container:
 
-`docker run -p 8080:5001 oranne5/flask-app:v7`
+`docker run -p 5001:5001 oranne5/flask-app:v*`
 
-5. URL
+5. Docker compose up (Flask App + Prometheus Service + Grafana Service)
 
-`https://flask-app-209305145679.us-central1.run.app/`
+`docker-compose up -d`
+
+or with build
+
+`docker-compose up -d --build`
+
+6. Docker compose down     
+
+`docker-compose down`

@@ -31,7 +31,6 @@ def read_df_all_and_df(uploaded_file_path=None, uploaded_file_df=None):
 
     # Set Datetime as the index
     df.set_index('Datetime', inplace=True)
-
     # Create a new datetime range with 15-minute intervals, covering the full range of the data
     full_range = pd.date_range(start=df.index.min(), end=df.index.max(), freq='15min')
 
@@ -55,8 +54,6 @@ def apply_discount(df, plan):
     discount = plan['discount']
     discount_hours = plan['hours']
     discount_days = {day.lower() for day in plan['days']}  # Convert to set for faster lookup
-
-    len_of_year = 2
     # Safely calculate discount rate for each row based on the years passed
     if isinstance(discount, list):
         # i want the first 365 days discount[0] and the second 365 days discount[1]
@@ -107,39 +104,57 @@ def process_hourly_aggregation(df_hourly):
     hour_means = df_hourly.groupby(df_hourly.index.hour).mean()
     return hour_means.to_dict(orient='index')
 
-def calculate_plan_prices(df_daily, plans, price_of_kWh):
+def calculate_plan_prices(df, plans, price_of_kWh):
     """Calculate prices for each plan."""
-    plan_prices = pd.DataFrame(index=df_daily.index)
+    plan_prices = pd.DataFrame(index=df.index)
+    
+    # Process plans in chunks to reduce memory usage
+    chunk_size = 1000
+    num_chunks = len(df) // chunk_size + 1
+    
     for plan in plans:
-        plan_prices[plan] = apply_discount(df_daily, plans[plan]) * price_of_kWh
+        # Process data in chunks
+        prices = []
+        for i in range(num_chunks):
+            start_idx = i * chunk_size
+            end_idx = min((i + 1) * chunk_size, len(df))
+            df_chunk = df.iloc[start_idx:end_idx]
+            chunk_prices = apply_discount(df_chunk, plans[plan]) * price_of_kWh
+            prices.extend(chunk_prices)
+        plan_prices[plan] = prices
+    
     return plan_prices
 
-def calculate_cumulative_stats(df_daily, plan_prices, hevrat_hashmal_plan_name, plans):
+def calculate_cumulative_stats(df, plan_prices, hevrat_hashmal_plan_name, plans):
     """Calculate cumulative statistics and plan comparisons."""
+    # Resample to daily data for cumulative calculations
+    df_daily = df.resample('D').sum()
+    plan_prices_daily = plan_prices.resample('D').sum()
+    
     # Combine consumption and plan prices
-    df_daily_combined = pd.concat([df_daily, plan_prices], axis=1)
+    df_combined = pd.concat([df_daily, plan_prices_daily], axis=1)
     
     # Calculate cumulative sums
-    df_daily_cumsum = df_daily_combined.cumsum()
+    df_cumsum = df_combined.cumsum()
     
     # Format dates
-    df_daily_cumsum.index = df_daily_cumsum.index.strftime('%Y-%m-%d %H:%M:%S')
+    df_cumsum.index = df_cumsum.index.strftime('%Y-%m-%d %H:%M:%S')
     
     # Calculate differences with other plans
     other_plans = [plan for plan in plans if plan != hevrat_hashmal_plan_name]
     df_diff_saving = pd.DataFrame(
-        {f"{plan}_diff": df_daily_cumsum[hevrat_hashmal_plan_name] - df_daily_cumsum[plan] 
+        {f"{plan}_diff": df_cumsum[hevrat_hashmal_plan_name] - df_cumsum[plan] 
          for plan in other_plans}
     )
     
     # Calculate final plan rankings
-    final_series_plans = df_daily_cumsum.iloc[-1].sort_values(ascending=True)
+    final_series_plans = df_cumsum.iloc[-1].sort_values(ascending=True)
     final_series_plans.index.name = 'plan'
     final_series_plans.name = 'price(ILS)'
     final_df_plans = final_series_plans.reset_index()
     
     return {
-        'price_sumcum': df_daily_cumsum.to_dict(orient='index'),
+        'price_sumcum': df_cumsum.to_dict(orient='index'),
         'diff_saving': df_diff_saving.to_dict(),
         'final_top_plans': final_df_plans.to_dict(orient='index')
     }
@@ -159,8 +174,8 @@ def process_csv_data(file_df, plans, price_of_kWh, hevrat_hashmal_plan_name):
     
     # Calculate various statistics
     hourly_agg = process_hourly_aggregation(df_hourly)
-    plan_prices = calculate_plan_prices(df_daily, plans, price_of_kWh)
-    cumulative_stats = calculate_cumulative_stats(df_daily, plan_prices, 
+    plan_prices = calculate_plan_prices(df_hourly, plans, price_of_kWh)
+    cumulative_stats = calculate_cumulative_stats(df_hourly, plan_prices, 
                                                 hevrat_hashmal_plan_name, plans)
     
     # Format daily sums
@@ -183,3 +198,5 @@ def process_csv_data(file_df, plans, price_of_kWh, hevrat_hashmal_plan_name):
     }
     print("Latency:", latency)
     return results_dict
+
+

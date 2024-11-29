@@ -1,35 +1,35 @@
-console.log('Chart script loading...');
+console.log('טוען את סקריפט התרשים...');
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Content Loaded');
+    console.log('DOM נטען');
 
     function getColorForValue(value, minValue, maxValue) {
-        // Calculate percentage between min and max
+        // חישוב אחוז בין מינימום למקסימום
         const percentage = (value - minValue) / (maxValue - minValue);
         
-        // Direct gradient from green to red
+        // גרדיאנט ישיר מירוק לאדום
         const r = Math.round(255 * percentage);
         const g = Math.round(255 * (1 - percentage));
         const b = 0;
         
-        return `rgba(${r}, ${g}, ${b}, 0.4)`; // Transparent
+        return `rgba(${r}, ${g}, ${b}, 0.4)`; // שקוף
     }
 
     function createChart(hourlyData) {
-        console.log('Creating chart with data:', hourlyData);
+        console.log('יוצר תרשים עם הנתונים:', hourlyData);
 
-        // Get the canvas
+        // מציאת הקנבס
         const canvas = document.getElementById('hourlyConsumptionChart');
         if (!canvas) {
-            console.error('Canvas element not found');
+            console.error('אלמנט הקנבס לא נמצא');
             return;
         }
 
-        // Prepare the data
+        // הכנת הנתונים
         const hours = Array.from({length: 24}, (_, i) => `${String(i).padStart(2, '0')}:00`);
         const values = Array(24).fill(0);
 
-        // Fill in the values
+        // מילוי הערכים
         Object.entries(hourlyData).forEach(([hour, data]) => {
             const hourIndex = parseInt(hour);
             if (hourIndex >= 0 && hourIndex < 24) {
@@ -37,29 +37,29 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Find min and max values (excluding zeros)
+        // מציאת ערכי מינימום ומקסימום (לא כולל אפסים)
         const nonZeroValues = values.filter(v => v > 0);
         const minValue = Math.min(...nonZeroValues);
         const maxValue = Math.max(...values);
 
-        // Create background colors array
+        // יצירת מערך צבעי רקע
         const backgroundColors = values.map(value => 
             value === 0 ? 'rgba(200, 200, 200, 0.2)' : getColorForValue(value, minValue, maxValue)
         );
 
-        // Create border colors array (slightly darker)
+        // יצירת מערך צבעי גבול (מעט כהים יותר)
         const borderColors = values.map(value => 
             value === 0 ? 'rgba(200, 200, 200, 0.3)' : 
             getColorForValue(value, minValue, maxValue).replace('0.4', '0.6')
         );
 
-        // Create the chart
+        // יצירת התרשים
         const chart = new Chart(canvas, {
             type: 'bar',
             data: {
                 labels: hours,
                 datasets: [{
-                    label: 'Energy Consumption (kWh)',
+                    label: 'צריכת חשמל (קוט"ש)',
                     data: values,
                     backgroundColor: backgroundColors,
                     borderColor: borderColors,
@@ -75,8 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         position: 'top',
                     },
                     title: {
-                        display: true,
-                        text: 'Hourly Energy Consumption'
+                        display: false  // Changed from true to false
                     }
                 },
                 scales: {
@@ -84,60 +83,60 @@ document.addEventListener('DOMContentLoaded', function() {
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Consumption (kWh)'
+                            text: 'צריכה (קוט"ש)'
                         }
                     },
                     x: {
                         title: {
                             display: true,
-                            text: 'Hour of Day'
+                            text: 'שעה ביום'
                         }
                     }
                 }
             }
         });
 
-        // Add legend
+        // הוספת מקרא
         const legendHtml = `
             <div style="margin-top: 10px; text-align: center; font-size: 12px; color: #666;">
                 <div style="display: inline-block; margin: 0 10px;">
                     <span style="display: inline-block; width: 20px; height: 20px; background: rgba(0, 255, 0, 0.4); vertical-align: middle; border: 1px solid rgba(0, 255, 0, 0.6);"></span>
-                    <span style="margin-left: 5px;">Low Consumption</span>
+                    <span style="margin-right: 5px;">צריכה נמוכה</span>
                 </div>
                 <div style="display: inline-block; margin: 0 10px;">
                     <span style="display: inline-block; width: 20px; height: 20px; background: rgba(255, 0, 0, 0.4); vertical-align: middle; border: 1px solid rgba(255, 0, 0, 0.6);"></span>
-                    <span style="margin-left: 5px;">High Consumption</span>
+                    <span style="margin-right: 5px;">צריכה גבוהה</span>
                 </div>
             </div>
         `;
         
-        // Insert the legend after the chart container
+        // הוספת המקרא אחרי מיכל התרשים
         const chartContainer = canvas.parentElement;
         chartContainer.insertAdjacentHTML('afterend', legendHtml);
     }
 
-    // Get the pre element with the results
+    // מציאת אלמנט ה-pre עם התוצאות
     const preElement = document.querySelector('pre');
     if (!preElement) {
-        console.error('No pre element found with results data');
+        console.error('לא נמצא אלמנט pre עם נתוני תוצאות');
         return;
     }
 
     try {
-        // Parse the JSON data
+        // פענוח נתוני ה-JSON
         const results = JSON.parse(preElement.textContent);
-        console.log('Parsed results:', results);
+        console.log('תוצאות מפוענחות:', results);
 
-        // Check for hourly_agg data
+        // בדיקה לנתוני hourly_agg
         if (!results.hourly_agg) {
-            console.error('No hourly_agg data found in results');
+            console.error('לא נמצאו נתוני hourly_agg בתוצאות');
             return;
         }
 
-        // Create the chart
+        // יצירת התרשים
         createChart(results.hourly_agg);
 
     } catch (error) {
-        console.error('Error processing data:', error);
+        console.error('שגיאה בעיבוד הנתונים:', error);
     }
 });
