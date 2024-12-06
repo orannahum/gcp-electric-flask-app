@@ -28,7 +28,7 @@ spec:
               value: 0.0.0.0
             - name: FLASK_RUN_PORT
               value: "5001"
-          image: gcr.io/electric-flask-app/flask-app:v12
+          image: gcr.io/electric-flask-app/flask-app:latest
           name: flask-app
           ports:
             - containerPort: 5001

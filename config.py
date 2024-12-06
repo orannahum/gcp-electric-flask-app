@@ -95,6 +95,63 @@ plans = {
         "work_with_meter": ["Smart Meter", "Simple Meter"],
       "more_services_that_needed": ["next_double"]
     }
+    ,
+    "plan_partner_power1": {
+      "hours": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+      "discount": [0.05, 0.06, 0.07],
+      "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      "work_with_meter": ["Smart Meter", "Simple Meter"]
+    },
+    "plan_partner_power2": {
+      "hours": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      "discount": [0.15],
+      "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+      "work_with_meter": ["Smart Meter"]
+  
+    },
+    "plan_partner_power3": {
+      "hours": [23, 0, 1, 2, 3, 4, 5, 6],
+      "discount": 0.2,
+      "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+      "work_with_meter": ["Smart Meter"]
+}
+,
+"plan_amisragas1": {
+  "hours": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+  "discount": [0.065],
+  "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  "work_with_meter": ["Smart Meter", "Simple Meter"]
+ 
+
+},
+
+"plan_amisragas2": {
+  "hours": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+  "discount": [0.07],
+  "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  "work_with_meter": ["Smart Meter", "Simple Meter"],
+  "more_services_that_needed": ["hot_triple"]
+
+},
+"plan_bezek1": {
+  "hours": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+  "discount": [0.07],
+  "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  "work_with_meter": ["Smart Meter", "Simple Meter"]
+},
+"plan_bezek2": {
+  "hours": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+  "discount": [0.15],
+  "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+  "work_with_meter": ["Smart Meter"]
+
+},
+"plan_bezek3": {
+  "hours": [23, 0, 1, 2, 3, 4, 5, 6],
+  "discount": 0.2,
+  "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+  "work_with_meter": ["Smart Meter"]
+}
 }
 
 
@@ -112,4 +169,13 @@ plans_translate_to_hebrew = {"plan_hevrat_hashmal1": "בלי מסלול-חברת
 "plan_hot3": "הוט אנרג'י -חוסכים בלילה",
 "plan_hot4": "הוט אנרג'י -חוסכים קבוע HOT- מסלול ללקוחות הוט טריפל בלבד",
 "plan_hot5": "הוט אנרג'י - e- triple- הנחה ללקוחות HOT טריפל ומובייל בלבד",
-"plan_hot6": "הוט אנרג'י -חוסכים קבוע NEXT- מסלול ללקוחות דאבל NEXT בלבד"}
+"plan_hot6": "הוט אנרג'י -חוסכים קבוע NEXT- מסלול ללקוחות דאבל NEXT בלבד",
+"plan_partner_power1": "פרטנר חשמל - קבועה כל היום",
+"plan_partner_power2": "פרטנר חשמל - ‏עובדים מהבית",
+"plan_partner_power3": "פרטנר חשמל - ‏חיות לילה",
+"plan_amisragas1": "אמישראגז חשמל - חסכון קבוע 6.5%",
+"plan_amisragas2": "אמישראגז חשמל - חסכון קבוע 7%",
+"plan_bezek1": "בזק חשמל - ‏חוסכים חכם 24/7",
+"plan_bezek2": "בזק חשמל - ‏חוסכים חכם ביום",
+"plan_bezek3": "בזק חשמל - ‏חוסכים חכם בלילה"
+}

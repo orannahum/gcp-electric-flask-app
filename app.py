@@ -40,6 +40,7 @@ last_latency = Gauge('app_last_latency_seconds', 'Last request latency in second
 cpu_usage = Gauge('app_cpu_usage_percent', 'CPU usage percentage', registry=registry)
 memory_usage = Gauge('app_memory_usage_percent', 'Memory usage percentage', registry=registry)
 reports_last_hour = Gauge('app_reports_generated_last_hour', 'Successful reports generated in the last hour', registry=registry)
+unique_ips_last_hour = Gauge('app_unique_ips_last_hour', 'Number of unique IP connections in the last hour', registry=registry)
 
 # Dictionary to store timestamps and latencies of requests
 request_times = {
@@ -49,6 +50,31 @@ request_times = {
     'reports': []
 }
 request_latencies = []
+
+# Initialize IP connections list at the top level
+ip_connections = []  # List of tuples (ip_address, timestamp)
+
+def get_client_ip():
+    """Get the real client IP address with detailed logging"""
+    # Log all headers for debugging
+    logger.info("=== FULL HEADERS ===")
+    for header_name, header_value in request.headers.items():
+        logger.info(f"{header_name}: {header_value}")
+    logger.info("==================")
+
+    # Try different headers in order of preference
+    if request.headers.get('X-Forwarded-For'):
+        client_ip = request.headers.get('X-Forwarded-For').split(',')[0].strip()
+        logger.info(f"Using X-Forwarded-For IP: {client_ip}")
+        return client_ip
+    
+    if request.headers.get('X-Real-IP'):
+        client_ip = request.headers.get('X-Real-IP')
+        logger.info(f"Using X-Real-IP: {client_ip}")
+        return client_ip
+
+    logger.info(f"Using remote_addr: {request.remote_addr}")
+    return request.remote_addr
 
 def clean_old_requests():
     """Remove requests older than 1 hour"""
@@ -63,10 +89,14 @@ def clean_old_requests():
         logger.debug(f"Cleaned {removed_count} old requests from {key} category")
     
     # Clean old latencies
-    global request_latencies
+    global request_latencies, ip_connections
     original_latencies = len(request_latencies)
     request_latencies = [(ts, lat) for ts, lat in request_latencies if ts > hour_ago]
-    logger.debug(f"Cleaned {original_latencies - len(request_latencies)} old latency records")
+    
+    # Clean old IP connections
+    original_ips = len(ip_connections)
+    ip_connections = [(ip, ts) for ip, ts in ip_connections if ts > hour_ago]
+    logger.debug(f"Cleaned {original_ips - len(ip_connections)} old IP connections")
 
 def calculate_error_rate(success_count, error_count):
     """Calculate error rate with proper handling of zero division"""
@@ -89,6 +119,13 @@ def update_metrics():
     success_last_hour.set(len(request_times['success']))
     errors_last_hour.set(len(request_times['error']))
     reports_last_hour.set(len(request_times['reports']))
+    
+    # Update unique IPs metric
+    current_time = time.time()
+    hour_ago = current_time - 3600
+    unique_ips = len(set(ip for ip, ts in ip_connections if ts > hour_ago))
+    unique_ips_last_hour.set(unique_ips)
+    logger.info(f"Current unique IPs in last hour: {unique_ips}")
     
     if request_latencies:
         average_latency = sum(lat for _, lat in request_latencies) / len(request_latencies)
@@ -119,6 +156,28 @@ def update_system_metrics():
     except Exception as e:
         logger.error(f"Error updating system metrics: {str(e)}", exc_info=True)
 
+def record_ip_connection():
+    """Record IP address of the current request"""
+    client_ip = get_client_ip()
+    current_time = time.time()
+    hour_ago = current_time - 3600
+    
+    # Log all details about the connection
+    logger.info(f"=== CONNECTION INFO ===")
+    logger.info(f"Detected Client IP: {client_ip}")
+    logger.info(f"Remote Address: {request.remote_addr}")
+    logger.info(f"Method: {request.method}")
+    logger.info(f"Path: {request.path}")
+    logger.info("=====================")
+    
+    # Only add if this IP isn't already recorded in the last hour
+    existing_ips = {ip for ip, ts in ip_connections if ts > hour_ago}
+    if client_ip not in existing_ips:
+        ip_connections.append((client_ip, current_time))
+        logger.info(f"Added new unique IP: {client_ip}")
+    else:
+        logger.info(f"IP already recorded: {client_ip}")
+
 class LatencyTimer:
     def __enter__(self):
         self.start = time.time()
@@ -138,6 +197,7 @@ def index():
     current_time = time.time()
     requests_total.inc()
     request_times['total'].append(current_time)
+    record_ip_connection()
 
     with LatencyTimer(), request_duration.time():
         try:
@@ -157,6 +217,7 @@ def upload_file():
     requests_total.inc()
     request_times['total'].append(current_time)
     report_button_clicks.inc()
+    record_ip_connection()
 
     with LatencyTimer(), request_duration.time():
         try:
@@ -212,6 +273,7 @@ def upload_file():
 @app.route('/metrics', methods=['GET'])
 def metrics():
     logger.info("Metrics endpoint accessed")
+    record_ip_connection()
     update_metrics()
     update_system_metrics()
     return generate_latest(registry), 200, {'Content-Type': CONTENT_TYPE_LATEST}

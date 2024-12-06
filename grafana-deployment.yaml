@@ -38,20 +38,20 @@ spec:
             - containerPort: 3000
               protocol: TCP
           volumeMounts:
-            - mountPath: /etc/grafana/provisioning/datasources
-              name: grafana-cm0
-            - mountPath: /etc/grafana/provisioning/dashboards
-              name: grafana-cm1
-            - mountPath: /var/lib/grafana/dashboards/flask
-              name: grafana-dashboards
+          - mountPath: /etc/grafana/provisioning/datasources
+            name: grafana-cm0
+          - mountPath: /etc/grafana/provisioning/dashboards
+            name: grafana-cm1
+          - mountPath: /var/lib/grafana/dashboards  # שינוי כאן
+            name: grafana-dashboards
       restartPolicy: Always
       volumes:
-        - configMap:
+        - name: grafana-cm0
+          configMap:
             name: grafana-cm0
-          name: grafana-cm0
-        - configMap:
+        - name: grafana-cm1
+          configMap:
             name: grafana-cm1
-          name: grafana-cm1
         - name: grafana-dashboards
-          hostPath:
-            path: /grafana/dashboards
+          configMap:
+            name: grafana-dashboards
