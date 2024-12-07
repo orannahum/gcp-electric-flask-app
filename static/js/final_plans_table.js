@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <th>דירוג</th>
                     <th>שם תוכנית</th>
                     <th>מחיר (₪)</th>
-                    <th>חיסכון לעומת התוכנית הנוכחית (₪)</th>
+                    <th>חיסכון לעומת חברת חשמל (₪)</th>
                     <th>יצירת קשר</th>
                 </tr>
             </thead>
