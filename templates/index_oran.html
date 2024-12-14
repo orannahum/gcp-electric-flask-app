@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>מחשבון מסלולי חשמל</title>
+
+    <link rel="stylesheet" href="../static/css/styles.css" />
+    <script src="../static/js/header.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <script src="{{ url_for('static', filename='js/header.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css"
+      type="text/css"
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav-container">
+        <div class="logo">
+          <img
+            src="{{ url_for('static', filename='images/logo.png') }}"
+            alt="לוגו"
+            class="logo-image"
+          />
+        </div>
+        <ul class="nav-links">
+          <li><a href="#" class="nav-link">דף הבית</a></li>
+          <li><a href="#about" class="nav-link">אודות</a></li>
+          <li><a href="#contact" class="nav-link">צור קשר</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="main-content">
+      <div class="container">
+        <section class="hero-section">
+          <h1 class="main-title">מחשבון מסלולי חשמל</h1>
+
+          <div class="video-wrapper">
+            <div class="video-text">
+              <h2>מצאו את המסלול המוזל ביותר בהתאם לשימוש האישי שלכם!</h2>
+              <p>
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Non
+                odio architecto suscipit facere possimus iste officiis dolore
+                ducimus dicta deserunt! Fugit accusamus autem nulla praesentium
+                beatae consequuntur et consequatur necessitatibus?
+              </p>
+              <section class="upload-section">
+                <form
+                  action="{{ url_for('upload_file') }}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  id="uploadForm"
+                  class="dropzone"
+                >
+                  <div class="dz-message" data-dz-message>
+                    <div class="upload-icon">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="48"
+                        height="48"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                      </svg>
+                    </div>
+                    <span>גרור קובץ CSV לכאן או לחץ להעלאה</span>
+                  </div>
+                  {% if error %}
+                  <span class="error-message">{{ error }}</span>
+                  {% endif %}
+                </form>
+                <div class="submit-wrapper">
+                  <button
+                    type="button"
+                    id="submitBtn"
+                    class="submit-button"
+                    disabled
+                  >
+                    הפק דוח
+                  </button>
+                </div>
+                <div id="cooldownMessage" class="cooldown-message"></div>
+              </section>
+            </div>
+            <div class="video-container">
+              <iframe
+                src="https://www.youtube.com/embed/l47fU-xAIOE"
+                title="הסבר על מחשבון החשמל"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              >
+              </iframe>
+            </div>
+          </div>
+        </section>
+
+        <!-- Results Section -->
+        {% if results %}
+        <!-- Your existing results code here -->
+        {% endif %}
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>צור קשר</h3>
+          <p>טלפון: 123-456-789</p>
+          <p>אימייל: info@example.com</p>
+        </div>
+        <div class="footer-section">
+          <h3>קישורים מהירים</h3>
+          <ul>
+            <li><a href="#">תנאי שימוש</a></li>
+            <li><a href="#">מדיניות פרטיות</a></li>
+            <li><a href="#">שאלות נפוצות</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>עקבו אחרינו</h3>
+          <div class="social-links">
+            <a href="#" aria-label="Facebook">פייסבוק</a>
+            <a href="#" aria-label="Twitter">טוויטר</a>
+            <a href="#" aria-label="LinkedIn">לינקדאין</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 מחשבון מסלולי חשמל. כל הזכויות שמורות.</p>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cooldown.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/daily_sum_time_series.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/final_plans_table.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hourly_bin_chart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/savings_time_series.js') }}"></script>
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    
+  </body>
+</html>

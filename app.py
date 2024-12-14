@@ -210,7 +210,7 @@ def index():
             request_times['error'].append(current_time)
             raise e
 
-@app.route('/upload', methods=['POST'])
+@app.route('/upload_file', methods=['POST'])
 def upload_file():
     logger.info("Received file upload request")
     current_time = time.time()
@@ -221,14 +221,17 @@ def upload_file():
 
     with LatencyTimer(), request_duration.time():
         try:
+            # Check if the file is in the Dropzone files
             file = request.files.get('file')
             if not file:
                 logger.warning("No file provided in upload request")
                 requests_error.inc()
                 request_times['error'].append(current_time)
-                return render_template('index.html', error="נא לבחור קובץ")
+                return {'error': "נא לבחור קובץ"}, 400
 
-            logger.info("Reading CSV file")
+            logger.info(f"Processing file: {file.filename}")
+
+            # Read and process the CSV file
             file_df = pd.read_csv(
                 file,
                 encoding='utf-8',
@@ -241,34 +244,34 @@ def upload_file():
             results_dict = process_csv_data(file_df, plans, price_of_kWh, hevrat_hashmal_plan_name)
             logger.info(f"Results keys: {results_dict.keys()}")
 
-            logger.info("File processing completed successfully")
+            # Log success metrics
             requests_success.inc()
             request_times['success'].append(current_time)
-            # Only increment reports metric on successful processing
             request_times['reports'].append(current_time)
-            logger.info("Incremented successful report metric")
+            logger.info("Processing completed successfully")
 
-            return render_template('index.html', 
-                                   results=results_dict,
-                                   plans_translate=plans_translate_to_hebrew)
+            # Return the rendered template with results
+            return render_template('index.html',
+                                results=results_dict,
+                                plans_translate=plans_translate_to_hebrew)
 
         except pd.errors.EmptyDataError:
             logger.error("Empty CSV file uploaded")
             requests_error.inc()
             request_times['error'].append(current_time)
-            return render_template('index.html', error="הקובץ ריק")
+            return {'error': "הקובץ ריק"}, 400
 
         except pd.errors.ParserError:
             logger.error("CSV parsing error")
             requests_error.inc()
             request_times['error'].append(current_time)
-            return render_template('index.html', error="הפורמט של הקובץ לא מתאים")
+            return {'error': "הפורמט של הקובץ לא מתאים"}, 400
 
         except Exception as e:
             logger.error(f"Unexpected error processing file: {str(e)}", exc_info=True)
             requests_error.inc()
             request_times['error'].append(current_time)
-            return render_template('index.html', error="אירעה שגיאה בעיבוד הקובץ")
+            return {'error': "אירעה שגיאה בעיבוד הקובץ"}, 500
 
 @app.route('/metrics', methods=['GET'])
 def metrics():
