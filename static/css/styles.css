@@ -396,31 +396,43 @@ body {
 /* High Contrast Mode */
 @media (prefers-contrast: high) {
   :root {
-    --electric-blue: #0000dd; /* Darker */
-    --electric-purple: #7000dd; /* Darker */
-    --electric-pink: #dd00dd; /* Darker */
-    --text-primary: #ffffff;
-    --text-secondary: #ffffff;
+    --electric-blue: #00aaff;  /* Bright Sky Blue */
+    --electric-green: #00e676; /* Fresh Green */
+    --electric-yellow: #ffee58; /* Sunny Yellow */
+    --text-primary: #000000;   /* Black for High Contrast */
+    --text-secondary: #333333; /* Darker Secondary Text */
   }
 }
 
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   :root {
-    --text-color: #f5f5f5;
-    --bg-color: #1a1a1a;
-    --white: #2d2d2d;
+    --bg-color: #e0f7fa;       /* Light Aqua Background */
+    --surface-color: #ffffff;  /* White Surfaces */
+    --card-color: #f1faff;     /* Pale Blue for Cards */
+    --text-primary: #102027;   /* Dark Blue-Green Text */
+    --text-secondary: #37474f; /* Darker Muted Text */
+    --text-muted: #5e5e80;     /* Muted Text */
   }
 }
 
-/* Light mode adjustments */
+/* Light Mode Adjustments */
 @media (prefers-color-scheme: light) {
   :root {
-    --bg-color: #f4f5fa; /* Slightly darker */
-    --surface-color: #ffffff;
-    --card-color: #ffffff;
-    --text-primary: #141428; /* Darker for better contrast */
-    --text-secondary: #424260; /* Darker for better contrast */
-    --text-muted: #5e5e80; /* Darker for better contrast */
+    /* Bright, Eco-friendly Theme */
+    --bg-color: #f0fcff;       /* Fresh Light Blue Background */
+    --surface-color: #ffffff;  /* White for Content Separation */
+    --card-color: #f7fdff;     /* Light Blue-Tinted White for Emphasis */
+
+    /* Energetic Highlight Colors */
+    --electric-blue: #00b0ff;  /* Trust and Stability */
+    --electric-green: #00e676; /* Eco-friendly & Savings */
+    --electric-yellow: #ffee58;/* Financial Savings Attention */
+    --accent-color: var(--electric-green);
+
+    /* Text Colors */
+    --text-primary: #102027;   /* Strong Blue-Green for Text */
+    --text-secondary: #37474f;/* Dark Muted Text */
+    --text-muted: #607d8b;     /* Muted, Readable Text */
   }
 }

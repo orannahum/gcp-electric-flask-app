@@ -1,160 +1,154 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="he">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
     <title>מחשבון מסלולי חשמל</title>
-
-    <link rel="stylesheet" href="../static/css/styles.css" />
-    <script src="../static/js/header.js"></script>
-
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/styles.css') }}"
-    />
-    <script src="{{ url_for('static', filename='js/header.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
-    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css"
-      type="text/css"
-    />
-  </head>
-  <body>
-    <header class="site-header">
-      <nav class="nav-container">
-        <div class="logo">
-          <img
-            src="{{ url_for('static', filename='images/logo.png') }}"
-            alt="לוגו"
-            class="logo-image"
-          />
-        </div>
-        <ul class="nav-links">
-          <li><a href="#" class="nav-link">דף הבית</a></li>
-          <li><a href="#about" class="nav-link">אודות</a></li>
-          <li><a href="#contact" class="nav-link">צור קשר</a></li>
-        </ul>
-      </nav>
-    </header>
+    <!DOCTYPE html>
+    <html lang="he" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>מחשבון מסלולי חשמל</title>
+    </head>
+<body>
+    <div class="main-container">
+        <h1 id="מחשבון-מסלולי-חשמל" class="hebrew-title">מחשבון מסלולי חשמל</h1>
 
-    <main class="main-content">
-      <div class="container">
-        <section class="hero-section">
-          <h1 class="main-title">מחשבון מסלולי חשמל</h1>
-
-          <div class="video-wrapper">
-            <div class="video-text">
-              <h2>מצאו את המסלול המוזל ביותר בהתאם לשימוש האישי שלכם!</h2>
-              <p>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Non
-                odio architecto suscipit facere possimus iste officiis dolore
-                ducimus dicta deserunt! Fugit accusamus autem nulla praesentium
-                beatae consequuntur et consequatur necessitatibus?
-              </p>
-              <section class="upload-section">
-                <form
-                  action="{{ url_for('upload_file') }}"
-                  method="post"
-                  enctype="multipart/form-data"
-                  id="uploadForm"
-                  class="dropzone"
-                >
-                  <div class="dz-message" data-dz-message>
-                    <div class="upload-icon">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="48"
-                        height="48"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="17 8 12 3 7 8" />
-                        <line x1="12" y1="3" x2="12" y2="15" />
-                      </svg>
-                    </div>
-                    <span>גרור קובץ CSV לכאן או לחץ להעלאה</span>
-                  </div>
-                  {% if error %}
-                  <span class="error-message">{{ error }}</span>
-                  {% endif %}
-                </form>
-                <div class="submit-wrapper">
-                  <button
-                    type="button"
-                    id="submitBtn"
-                    class="submit-button"
-                    disabled
-                  >
-                    הפק דוח
-                  </button>
-                </div>
-                <div id="cooldownMessage" class="cooldown-message"></div>
-              </section>
-            </div>
+        <section class="video-section">
             <div class="video-container">
-              <iframe
-                src="https://www.youtube.com/embed/l47fU-xAIOE"
-                title="הסבר על מחשבון החשמל"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              >
-              </iframe>
+                <iframe 
+                    src="https://www.youtube.com/embed/l47fU-xAIOE"
+                    title="YouTube video"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
             </div>
-          </div>
+
+            <div class="text-content">
+                <h2>לחסוך חשמל במסלול מוזל!</h2>
+                <p>פה יהיה טקסט</p>
+                <p>פה יהיה טקסט</p>
+            </div>
         </section>
 
-        <!-- Results Section -->
+        <section class="upload-section">
+            <h2 class="english-title">העלאת קובץ CSV</h2>
+
+            <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+                <input type="file" name="file" accept=".csv" required>
+                <div class="submit-container">
+                    <button type="submit" id="submitBtn">הפק דוח</button>
+                    <span class="error-message">{% if error %}{{ error }}{% endif %}</span>
+                </div>
+            </form>
+
+            <div id="cooldownMessage" style="display: none; color: red;"></div>
+
         {% if results %}
-        <!-- Your existing results code here -->
-        {% endif %}
-      </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="site-footer">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>צור קשר</h3>
-          <p>טלפון: 123-456-789</p>
-          <p>אימייל: info@example.com</p>
+    <!-- Hidden data elements -->
+    <div id="dailyData" style="display: none;">{{ results.daily_sum | tojson | safe }}</div>
+    <div id="plansData" style="display: none;">{{ results.final_top_plans | tojson | safe }}</div>
+    <div id="clientPlan" style="display: none;">{{ results.hevrat_hashmal_plan_name | tojson | safe }}</div>
+    <div id="plansTranslations" style="display: none;">{{ plans_translate|tojson | safe }}</div>
+    <div class="results-container">
+        <div class="section top-plans">
+            <div class="top-plans-container">
+                <div class="plan-card first">
+                    <h3>מסלול במקום ה1</h3>
+                    <div class="plan-name" data-plan="{{ results.final_top_plans[0].plan }}"></div>
+                    <div class="plan-savings" data-price="{{ results.final_top_plans[0]['price(ILS)'] }}"></div>
+                </div>
+    
+                <div class="plan-card second">
+                    <h3>מסלול במקום ה2</h3>
+                    <div class="plan-name" data-plan="{{ results.final_top_plans[1].plan }}"></div>
+                    <div class="plan-savings" data-price="{{ results.final_top_plans[1]['price(ILS)'] }}"></div>
+                </div>
+    
+                <div class="plan-card third">
+                    <h3>מסלול במקום ה3</h3>
+                    <div class="plan-name" data-plan="{{ results.final_top_plans[2].plan }}"></div>
+                    <div class="plan-savings" data-price="{{ results.final_top_plans[2]['price(ILS)'] }}"></div>
+                </div>
+            </div>
+            <button class="show-more-button" id="showMoreButton">
+                תראה לי עוד מידע וגרפים על הצריכת חשמל שלי
+            </button>
         </div>
-        <div class="footer-section">
-          <h3>קישורים מהירים</h3>
-          <ul>
-            <li><a href="#">תנאי שימוש</a></li>
-            <li><a href="#">מדיניות פרטיות</a></li>
-            <li><a href="#">שאלות נפוצות</a></li>
-          </ul>
+    
+        <!-- Wrap all content to be hidden in this div -->
+        <div class="hidden-content" id="moreContent">
+            <div class="section client-info">
+                <h2>פרטי לקוח</h2>
+                <div>
+                    <div>
+                        <span>לקוח:</span>
+                        <span>{{ results.client_info.name }}</span>
+                    </div>
+                    <div>
+                        <span>כתובת:</span>
+                        <span>{{ results.client_info.address }}</span>
+                    </div>
+                    <div>
+                        <span>קוד מונה:</span>
+                        <span>{{ results.client_info.meter_code }}</span>
+                    </div>
+                    <div>
+                        <span>מספר מונה:</span>
+                        <span>{{ results.client_info.meter_number }}</span>
+                    </div>
+                </div>
+    
+                <div class="section charts">
+                    <div class="chart-wrapper">
+                        <h2>צריכה יומית</h2>
+                        <div class="chart-container">
+                            <canvas id="dailyConsumptionChart"></canvas>
+                        </div>
+                    </div>
+    
+                    <div class="chart-wrapper">
+                        <h2>תרשים צריכה שעתית</h2>
+                        <div class="chart-container">
+                            <canvas id="hourlyConsumptionChart"></canvas>
+                        </div>
+                    </div>
+    
+                    <div class="chart-wrapper">
+                        <h2>חיסכון לעומת חברת חשמל</h2>
+                        <div class="chart-container">
+                            <canvas id="savingsTimeSeriesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="section plans-comparison">
+                    <h2>השוואת תכניות סופית</h2>
+                    <div id="finalPlansTable"></div>
+                </div>
+    
+                <div class="section debug-output" style="display: none;">
+                    <h2>פלט מלא</h2>
+                    <pre>{{ results | tojson(indent=4) }}</pre>
+                </div>
+            </div>
         </div>
-        <div class="footer-section">
-          <h3>עקבו אחרינו</h3>
-          <div class="social-links">
-            <a href="#" aria-label="Facebook">פייסבוק</a>
-            <a href="#" aria-label="Twitter">טוויטר</a>
-            <a href="#" aria-label="LinkedIn">לינקדאין</a>
-          </div>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>&copy; 2024 מחשבון מסלולי חשמל. כל הזכויות שמורות.</p>
-      </div>
-    </footer>
-
-    <!-- Scripts -->
+    </div>
+    <script id="resultsData" type="application/json">
+        {{ results | tojson | safe }}
+    </script>
+    
+    <!-- Chart and Utility Scripts -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/cooldown.js') }}"></script>
     <script src="{{ url_for('static', filename='js/daily_sum_time_series.js') }}"></script>
     <script src="{{ url_for('static', filename='js/final_plans_table.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hourly_bin_chart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/savings_time_series.js') }}"></script>
-    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
     
-  </body>
-</html>
+    {% endif %}
+    </body>
+</html>    
