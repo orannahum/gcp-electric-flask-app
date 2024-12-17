@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <tr>
                     <th>דירוג</th>
                     <th>שם תוכנית</th>
-                    <th>מחיר (₪)</th>
-                    <th>חיסכון לעומת חברת חשמל (₪)</th>
+                    <th>מחיר החשמל מתחילת המדידה</th>
+                    <th>חיסכון לעומת חברת חשמל</th>
                     <th>יצירת קשר</th>
                 </tr>
             </thead>
@@ -71,10 +71,16 @@ document.addEventListener('DOMContentLoaded', function() {
             row.innerHTML = `
                 <td>${index + 1}</td>
                 <td class="${isCurrentPlan ? 'current-plan' : ''}">${plan.planHebrew}</td>
-                <td>${plan.price.toFixed(2)}</td>
-                <td class="${savings > 0 ? 'positive-savings' : savings < 0 ? 'negative-savings' : ''}">${
-                    currentPlanPrice ? savings.toFixed(2) : 'לא זמין'
-                }</td>
+                
+                <!-- Electricity Price Column with '₪' Symbol on the Left -->
+                <td>₪ ${plan.price.toFixed(2)}</td>
+                
+                <!-- Savings Column with '₪' Symbol on the Left -->
+                <td class="${savings > 0 ? 'positive-savings' : savings < 0 ? 'negative-savings' : ''}">
+                    ${currentPlanPrice ? `₪ ${savings.toFixed(2)}` : 'לא זמין'}
+                </td>
+                
+                <!-- Contact Links -->
                 <td>
                     <div class="contact-links">
                         <a href="#" class="contact-link company-link">יצירת קשר</a>

@@ -281,6 +281,27 @@ def metrics():
     update_system_metrics()
     return generate_latest(registry), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
+@app.route('/about', methods=['GET'])
+def about():
+    logger.info("Received request for about page")
+    return render_template('about.html')
+
+@app.route('/videos', methods=['GET'])
+def videos():
+    logger.info("Received request for videos page")
+    return render_template('videos.html')
+
+@app.route('/terms', methods=['GET'])
+def terms():
+    logger.info("Received request for terms page")
+    return render_template('terms.html')
+
+@app.route('/contact', methods=['GET'])
+def contact():
+    logger.info("Received request for contact page")
+    return render_template('contact.html')
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     logger.info(f"Starting Flask application on port {port}")

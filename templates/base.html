@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}אודות{% endblock %}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/header.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css">
+</head>
+<body>
+<header class="site-header">
+    <nav class="nav-container">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo_example.png') }}" alt="לוגו" class="logo-image">
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('index') }}" class="nav-link">מחשבון מסלולי חשמל</a></li>
+            <li><a href="{{ url_for('about') }}" class="nav-link">אודות</a></li>
+            <li><a href="{{ url_for('videos') }}" class="nav-link">סרטוני הדרכה</a></li>
+            <li><a href="{{ url_for('terms') }}" class="nav-link">תקנון</a></li>
+            <li><a href="{{ url_for('contact') }}" class="nav-link">צור קשר</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="main-content">
+    <h1>אודות</h1>
+    <p>כאן יש מידע על החברה או הפרויקט.</p>
+    <a href="{{ url_for('index') }}">חזרה לעמוד הראשי</a>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>צור קשר</h3>
+            <p>טלפון: 123-456-789</p>
+            <p>אימייל: info@example.com</p>
+        </div>
+        <div class="footer-section">
+            <h3>קישורים מהירים</h3>
+            <ul>
+                <li><a href="#">תנאי שימוש</a></li>
+                <li><a href="#">מדיניות פרטיות</a></li>
+                <li><a href="#">שאלות נפוצות</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>עקבו אחרינו</h3>
+            <div class="social-links">
+                <a href="#" aria-label="Facebook">פייסבוק</a>
+                <a href="#" aria-label="Twitter">טוויטר</a>
+                <a href="#" aria-label="LinkedIn">לינקדאין</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 מחשבון מסלולי חשמל. כל הזכויות שמורות.</p>
+    </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/cooldown.js') }}"></script>
+</body>
+</html>

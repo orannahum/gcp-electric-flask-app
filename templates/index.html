@@ -28,15 +28,17 @@
       <nav class="nav-container">
         <div class="logo">
           <img
-            src="{{ url_for('static', filename='images/logo.png') }}"
+            src="{{ url_for('static', filename='images/logo_example.png') }}"
             alt="לוגו"
             class="logo-image"
           />
         </div>
         <ul class="nav-links">
-          <li><a href="#" class="nav-link">דף הבית</a></li>
-          <li><a href="#about" class="nav-link">אודות</a></li>
-          <li><a href="#contact" class="nav-link">צור קשר</a></li>
+          <li><a href="{{ url_for('index') }}" class="nav-link">מחשבון מסלולי חשמל</a></li>
+          <li><a href="{{ url_for('about') }}" class="nav-link">אודות</a></li>
+          <li><a href="{{ url_for('videos') }}" class="nav-link">סרטוני הדרכה</a></li>
+          <li><a href="{{ url_for('terms') }}" class="nav-link">תקנון</a></li>
+          <li><a href="{{ url_for('contact') }}" class="nav-link">צור קשר</a></li>
         </ul>
       </nav>
     </header>

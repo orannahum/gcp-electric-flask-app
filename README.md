@@ -26,3 +26,9 @@ or with build
 6. Docker compose down     
 
 `docker-compose down`
+
+
+
+# to restart the pod in gcp 
+
+`kubectl rollout restart deployment flask-app`
