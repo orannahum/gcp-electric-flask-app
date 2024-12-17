@@ -243,6 +243,7 @@ def upload_file():
             logger.info(f"CSV file read successfully. Shape: {file_df.shape}")
             results_dict = process_csv_data(file_df, plans, price_of_kWh, hevrat_hashmal_plan_name)
             logger.info(f"Results keys: {results_dict.keys()}")
+            print("'final_top_plans' in results_dict:", results_dict['final_top_plans'])
 
             # Log success metrics
             requests_success.inc()

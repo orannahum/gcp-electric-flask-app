@@ -112,6 +112,13 @@
                     <div class="plan-savings" data-price="{{ results.final_top_plans[2]['price(ILS)'] }}"></div>
                 </div>
             </div>
+            
+          <div class="section charts">
+            <h2>גרף עשרת המסלולים המובילים</h2>
+            <div class="chart-container">
+                <canvas id="topPlansChart"></canvas>
+            </div>
+          </div>
             <button class="show-more-button" id="showMoreButton">
                 תראה לי עוד מידע וגרפים על הצריכת חשמל שלי
             </button>
@@ -219,6 +226,7 @@
     <script src="{{ url_for('static', filename='js/final_plans_table.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hourly_bin_chart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/savings_time_series.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/top_plans_chart.js') }}"></script>
     <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
     
   </body>
