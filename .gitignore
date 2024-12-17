@@ -1,2 +1,3 @@
 grafana/dashboards/*.json
 
+__pycache__/
