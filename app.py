@@ -192,6 +192,23 @@ class LatencyTimer:
         logger.debug(f"Updated last_latency metric to {self.duration:.4f} seconds")
         update_metrics()
 
+
+def filter_plans(meter_type, selected_services, plans):
+    filtered_plans = {}
+
+    for plan_name, plan_details in plans.items():
+        # Check if the meter type is compatible
+        if meter_type not in plan_details["work_with_meter"]:
+            continue
+        
+        # Check if required services are met
+        required_services = plan_details.get("more_services_that_needed", [])
+        if all(service in selected_services for service in required_services):
+            filtered_plans[plan_name] = plan_details
+
+    return filtered_plans
+
+
 @app.route('/', methods=['GET'])
 def index():
     logger.info("Received request for index page")
@@ -232,6 +249,14 @@ def upload_file():
     report_button_clicks.inc()
     record_ip_connection()
 
+    meter_type = request.form.get('meterType')
+    selected_services = request.form.getlist('services[]')
+    updated_plans = filter_plans(meter_type, selected_services, plans)
+
+    # עיבוד המידע או הצגת המידע
+    print(f"Meter Type: {meter_type}")
+    print(f"Selected Services: {selected_services}")
+
     with LatencyTimer(), request_duration.time():
         try:
             # Check if the file is in the Dropzone files
@@ -254,7 +279,7 @@ def upload_file():
             )
 
             logger.info(f"CSV file read successfully. Shape: {file_df.shape}")
-            results_dict = process_csv_data(file_df, plans, price_of_kWh, hevrat_hashmal_plan_name)
+            results_dict = process_csv_data(file_df, updated_plans, price_of_kWh, hevrat_hashmal_plan_name)
             logger.info(f"Results keys: {results_dict.keys()}")
 
             # Store results in session

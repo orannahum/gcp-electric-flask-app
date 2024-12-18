@@ -152,7 +152,7 @@ def calculate_cumulative_stats(df, plan_prices, hevrat_hashmal_plan_name, plans)
     final_series_plans.index.name = 'plan'
     final_series_plans.name = 'price(ILS)'
     final_df_plans = final_series_plans.reset_index()
-    print('diff_saving:', df_diff_saving.to_dict())
+   # print('diff_saving:', df_diff_saving.to_dict())
     return {
         'price_sumcum': df_cumsum.to_dict(orient='index'),
         'diff_saving': df_diff_saving.to_dict(),
@@ -173,7 +173,6 @@ def process_csv_data(file_df, plans, price_of_kWh, hevrat_hashmal_plan_name):
     client_info['end_date'] = end_date.strftime('%Y-%m-%d')
     num_days = (end_date - start_date).days + 1
     client_info['num_days'] = num_days
-    print("client_info:", client_info)
     # Create hourly and daily aggregations
     df_hourly = uploaded_file_df.resample('h').sum()
     df_daily = df_hourly[['Consumption (kWh)']].resample('D').sum()
