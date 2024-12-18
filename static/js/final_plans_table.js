@@ -7,28 +7,35 @@ document.addEventListener('DOMContentLoaded', function() {
         const plansDataElement = document.getElementById('plansData');
         const clientPlanElement = document.getElementById('clientPlan');
         const tableContainer = document.getElementById('finalPlansTable');
+        const resultsData = JSON.parse(document.getElementById('resultsData').textContent);
         
         console.log('Elements found:', {
             plansDataElement: !!plansDataElement,
             clientPlanElement: !!clientPlanElement,
-            tableContainer: !!tableContainer
+            tableContainer: !!tableContainer,
+            resultsData: !!resultsData
         });
 
-        if (!plansDataElement || !clientPlanElement || !tableContainer || !translationsElement) {
+        if (!plansDataElement || !clientPlanElement || !tableContainer || !translationsElement || !resultsData) {
             throw new Error('Required elements not found');
         }
 
         const plansData = JSON.parse(plansDataElement.textContent);
         const clientPlan = JSON.parse(clientPlanElement.textContent);
+        const numDays = resultsData.client_info.num_days;
 
-        console.log('Parsed data:', { plansData, clientPlan });
+        console.log('Raw data:', {
+            plansData,
+            clientPlan,
+            numDays
+        });
 
         const plansArray = Object.values(plansData)
             .filter(item => item && item.plan && item.plan !== "Consumption (kWh)")
             .map(item => ({
                 plan: item.plan,
                 planHebrew: plans_translate_to_hebrew[item.plan] || item.plan,
-                price: item['price(ILS)']
+                price: parseFloat(item['price(ILS)']) || 0
             }))
             .sort((a, b) => a.price - b.price);
 
@@ -43,8 +50,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <tr>
                     <th>דירוג</th>
                     <th>שם תוכנית</th>
-                    <th>מחיר החשמל מתחילת המדידה</th>
                     <th>חיסכון לעומת חברת חשמל</th>
+                    <th>אומדן חסכון לשנה</th>
+                    <th>אומדן חסכון ל-3 שנים</th>
                     <th>יצירת קשר</th>
                 </tr>
             </thead>
@@ -56,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentPlanData = plansArray.find(plan => plan.plan === clientPlan);
         const currentPlanPrice = currentPlanData ? currentPlanData.price : null;
 
-        console.log('Current plan data:', { currentPlanData, currentPlanPrice });
+        console.log('Current plan price:', currentPlanPrice);
 
         plansArray.forEach((plan, index) => {
             const row = document.createElement('tr');
@@ -66,18 +74,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 row.classList.add('current-plan-row');
             }
 
-            const savings = currentPlanPrice ? (currentPlanPrice - plan.price) : 0;
+            let savings = 0;
+            let yearlySavings = 0;
+            let threeYearSavings = 0;
+
+            if (currentPlanPrice !== null && !isNaN(currentPlanPrice) && !isNaN(plan.price)) {
+                savings = currentPlanPrice - plan.price;
+                yearlySavings = (savings * 365) / numDays;
+                threeYearSavings = yearlySavings * 3;
+            }
+
+            const formatNumber = (num) => {
+                if (isNaN(num)) return 'לא זמין';
+                return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            };
 
             row.innerHTML = `
                 <td>${index + 1}</td>
                 <td class="${isCurrentPlan ? 'current-plan' : ''}">${plan.planHebrew}</td>
                 
-                <!-- Electricity Price Column with '₪' Symbol on the Left -->
-                <td>₪ ${plan.price.toFixed(2)}</td>
-                
-                <!-- Savings Column with '₪' Symbol on the Left -->
+                <!-- Current Savings Column -->
                 <td class="${savings > 0 ? 'positive-savings' : savings < 0 ? 'negative-savings' : ''}">
-                    ${currentPlanPrice ? `₪ ${savings.toFixed(2)}` : 'לא זמין'}
+                    ${currentPlanPrice !== null ? `₪ ${formatNumber(savings)}` : 'לא זמין'}
+                </td>
+
+                <!-- Yearly Savings Estimate Column -->
+                <td class="${yearlySavings > 0 ? 'positive-savings' : yearlySavings < 0 ? 'negative-savings' : ''}">
+                    ${currentPlanPrice !== null ? `₪ ${formatNumber(yearlySavings)}` : 'לא זמין'}
+                </td>
+
+                <!-- Three Year Savings Estimate Column -->
+                <td class="${threeYearSavings > 0 ? 'positive-savings' : threeYearSavings < 0 ? 'negative-savings' : ''}">
+                    ${currentPlanPrice !== null ? `₪ ${formatNumber(threeYearSavings)}` : 'לא זמין'}
                 </td>
                 
                 <!-- Contact Links -->

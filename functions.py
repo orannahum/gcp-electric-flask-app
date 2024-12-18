@@ -167,7 +167,13 @@ def process_csv_data(file_df, plans, price_of_kWh, hevrat_hashmal_plan_name):
     df_all, uploaded_file_df = read_df_all_and_df(uploaded_file_df=file_df)
     df_info = df_all.iloc[:10]
     client_info = read_client_info(df_info)
-    
+    start_date = uploaded_file_df.index[0]
+    end_date = uploaded_file_df.index[-1]
+    client_info['start_date'] = start_date.strftime('%Y-%m-%d')
+    client_info['end_date'] = end_date.strftime('%Y-%m-%d')
+    num_days = (end_date - start_date).days + 1
+    client_info['num_days'] = num_days
+    print("client_info:", client_info)
     # Create hourly and daily aggregations
     df_hourly = uploaded_file_df.resample('h').sum()
     df_daily = df_hourly[['Consumption (kWh)']].resample('D').sum()

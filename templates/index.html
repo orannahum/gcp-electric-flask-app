@@ -87,6 +87,8 @@
         <!-- Results Section -->
         {% if results %}
         <!-- Hidden data elements -->
+    <div id="numDays" style="display: none;">{{ results.num_days }}</div>
+
     <div id="dailyData" style="display: none;">{{ results.daily_sum | tojson | safe }}</div>
     <div id="plansData" style="display: none;">{{ results.final_top_plans | tojson | safe }}</div>
     <div id="clientPlan" style="display: none;">{{ results.hevrat_hashmal_plan_name | tojson | safe }}</div>
@@ -127,25 +129,29 @@
         <!-- Wrap all content to be hidden in this div -->
         <div class="hidden-content" id="moreContent">
             <div class="section client-info">
-                <h2>פרטי לקוח</h2>
-                <div>
-                    <div>
-                        <span>לקוח:</span>
-                        <span>{{ results.client_info.client }}</span>
-                    </div>
-                    <div>
-                        <span>כתובת:</span>
-                        <span>{{ results.client_info.address }}</span>
-                    </div>
-                    <div>
-                        <span>קוד מונה:</span>
-                        <span>{{ results.client_info.meter_code }}</span>
-                    </div>
-                    <div>
-                        <span>מספר מונה:</span>
-                        <span>{{ results.client_info.meter_number }}</span>
-                    </div>
-                </div>
+              <h2>פרטי לקוח</h2>
+              <div>
+                  <div>
+                      <span>לקוח:</span>
+                      <span>{{ results.client_info.client }}</span>
+                  </div>
+                  <div>
+                      <span>כתובת:</span>
+                      <span>{{ results.client_info.address }}</span>
+                  </div>
+                  <div>
+                      <span>קוד מונה:</span>
+                      <span>{{ results.client_info.meter_code }}</span>
+                  </div>
+                  <div>
+                      <span>מספר מונה:</span>
+                      <span>{{ results.client_info.meter_number }}</span>
+                  </div>
+                  <div>
+                      <span>טווח תאריכים:</span>
+                      <span>{{ results.client_info.start_date }} - {{ results.client_info.end_date }}</span>
+                  </div>
+              </div>
     
                 <div class="section charts">
                     <div class="chart-wrapper">
