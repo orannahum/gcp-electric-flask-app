@@ -130,7 +130,7 @@ plans = {
   "discount": [0.07],
   "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
   "work_with_meter": ["Smart Meter", "Simple Meter"],
-  "more_services_that_needed": ["hot_triple"]
+  "more_services_that_needed": ["amisragas_client"]
 
 },
 "plan_bezek1": {
@@ -179,3 +179,11 @@ plans_translate_to_hebrew = {"plan_hevrat_hashmal1": "בלי מסלול-חברת
 "plan_bezek2": "בזק חשמל - ‏חוסכים חכם ביום",
 "plan_bezek3": "בזק חשמל - ‏חוסכים חכם בלילה"
 }
+
+
+SERVICES = [
+    {"value": "hot_triple", "text": "הוט טריפל"},
+    {"value": "hot_mobile", "text": "הוט מובייל"},
+    {"value": "next_double", "text": "נקסט דאבל"},
+    {"value": "amisragas_client", "text": "לקוח אמישראגז"}
+]

@@ -62,7 +62,35 @@
             
                 <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm">
                     <input type="file" name="file" accept=".csv" required>
-                    
+                    <div class="meter-selection">
+                      <label>סוג מונה:</label>
+                      <div class="radio-group">
+                          <input type="radio" id="smartMeter" name="meterType" value="smart" checked required>
+                          <label for="smartMeter">מונה חכם</label>
+                          
+                          <input type="radio" id="regularMeter" name="meterType" value="regular">
+                          <label for="regularMeter">מונה רגיל</label>
+                      </div>
+                  </div>
+                  <div class="numbers-selection">
+                    <label>בחירת שירותים:</label>
+                    <div class="custom-select">
+                        <button type="button" class="select-button" onclick="toggleDropdown(event)">
+                            בחר שירותים
+                            <span class="arrow-down">▼</span>
+                        </button>
+                        <div class="select-dropdown" style="display: none;">
+                            <div class="option-container">
+                                {% for service in services %}
+                                <label class="option">
+                                    <input type="checkbox" name="services[]" value="{{ service['value'] }}">
+                                    <span class="option-text">{{ service['text'] }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
                     <div class="submit-container">
                         <button type="submit" id="submitBtn" class="submit-button">הפק דוח</button>
                         <span class="error-message">{% if error %}{{ error }}{% endif %}</span>
@@ -151,6 +179,10 @@
                       <span>טווח תאריכים:</span>
                       <span>{{ results.client_info.start_date }} - {{ results.client_info.end_date }}</span>
                   </div>
+                  <div>
+                    <span>מחיר עדכני לקילו וואט:</span>
+                    <span>₪ {{ results.price_of_kWh }}</span>
+                </div>
               </div>
     
                 <div class="section charts">
@@ -232,7 +264,7 @@
     <script src="{{ url_for('static', filename='js/final_plans_table.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hourly_bin_chart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/savings_time_series.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/services_toggle_dropdown.js') }}"></script>
     <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
-    
   </body>
 </html>

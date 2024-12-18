@@ -1273,3 +1273,82 @@ body {
       padding: 2px;
   }
 }
+
+
+/* הוספה בסוף הקובץ CSS */
+.meter-selection, .numbers-selection {
+  margin-top: 1rem;
+  text-align: right;
+  direction: rtl;
+}
+
+.radio-group {
+  display: flex;
+  gap: 2rem;
+  margin: 0.5rem 0;
+}
+
+.radio-group label {
+  margin-right: 0.5rem;
+}
+
+.custom-select {
+  position: relative;
+  width: 100%;
+  text-align: right;
+  direction: rtl;
+}
+
+.select-button {
+  width: 100%;
+  padding: 10px;
+  background: white;
+  border: 1px solid rgba(0, 212, 228, 0.08);
+  border-radius: var(--border-radius);
+  text-align: right;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.select-button:hover {
+  background-color: #f8f9fa;
+}
+
+.select-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid rgba(0, 212, 228, 0.08);
+  border-radius: var(--border-radius);
+  margin-top: 5px;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.option-container {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.option:hover {
+  background-color: #f8f9fa;
+}
+
+.option input[type="checkbox"] {
+  margin-left: 10px;
+}
+
+.option-text {
+  margin-right: 8px;
+}

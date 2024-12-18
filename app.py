@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 from functions import process_csv_data
-from config import price_of_kWh, plans, hevrat_hashmal_plan_name, plans_translate_to_hebrew
+from config import price_of_kWh, plans, hevrat_hashmal_plan_name, plans_translate_to_hebrew, SERVICES
 import time
 import logging
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST, CollectorRegistry
@@ -211,7 +211,8 @@ def index():
             
             return render_template('index.html',
                                 results=results,
-                                plans_translate=plans_translate)
+                                plans_translate=plans_translate,
+                                services=SERVICES)
         except Exception as e:
             logger.error(f"Error rendering index template: {str(e)}", exc_info=True)
             requests_error.inc()
