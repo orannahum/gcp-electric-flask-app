@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask,session, request, render_template, redirect, url_for
 import pandas as pd
 import numpy as np
 import os
@@ -19,6 +19,7 @@ logger = logging.getLogger('flask_app')
 app = Flask(__name__, template_folder='templates', 
             static_url_path='/static',
             static_folder='static')
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24))
 
 # Create a custom registry
 registry = CollectorRegistry()
@@ -203,15 +204,26 @@ def index():
         try:
             logger.info("Rendering index template")
             request_times['success'].append(current_time)
-            return render_template('index.html')
+            
+            # Get results from session if they exist
+            results = session.get('results')
+            plans_translate = session.get('plans_translate')
+            
+            return render_template('index.html',
+                                results=results,
+                                plans_translate=plans_translate)
         except Exception as e:
             logger.error(f"Error rendering index template: {str(e)}", exc_info=True)
             requests_error.inc()
             request_times['error'].append(current_time)
             raise e
 
-@app.route('/upload_file', methods=['POST'])
+@app.route('/upload_file', methods=['GET', 'POST'])
 def upload_file():
+    if request.method == 'GET':
+        # Redirect GET requests to index
+        return redirect(url_for('index'))
+        
     logger.info("Received file upload request")
     current_time = time.time()
     requests_total.inc()
@@ -244,6 +256,10 @@ def upload_file():
             results_dict = process_csv_data(file_df, plans, price_of_kWh, hevrat_hashmal_plan_name)
             logger.info(f"Results keys: {results_dict.keys()}")
 
+            # Store results in session
+            session['results'] = results_dict
+            session['plans_translate'] = plans_translate_to_hebrew
+
             # Log success metrics
             requests_success.inc()
             request_times['success'].append(current_time)
@@ -272,7 +288,13 @@ def upload_file():
             requests_error.inc()
             request_times['error'].append(current_time)
             return {'error': "אירעה שגיאה בעיבוד הקובץ"}, 500
-
+@app.route('/clear_results', methods=['POST'])
+def clear_results():
+    """Clear the results from the session"""
+    session.pop('results', None)
+    session.pop('plans_translate', None)
+    return redirect(url_for('index'))
+        
 @app.route('/metrics', methods=['GET'])
 def metrics():
     logger.info("Metrics endpoint accessed")

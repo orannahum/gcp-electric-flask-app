@@ -152,7 +152,7 @@ def calculate_cumulative_stats(df, plan_prices, hevrat_hashmal_plan_name, plans)
     final_series_plans.index.name = 'plan'
     final_series_plans.name = 'price(ILS)'
     final_df_plans = final_series_plans.reset_index()
-    
+    print('diff_saving:', df_diff_saving.to_dict())
     return {
         'price_sumcum': df_cumsum.to_dict(orient='index'),
         'diff_saving': df_diff_saving.to_dict(),

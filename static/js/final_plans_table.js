@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log('Processed plans array:', plansArray);
 
+        // Create Table
         const table = document.createElement('table');
         table.className = 'plans-table';
         table.dir = 'rtl';
@@ -92,23 +93,15 @@ document.addEventListener('DOMContentLoaded', function() {
             row.innerHTML = `
                 <td>${index + 1}</td>
                 <td class="${isCurrentPlan ? 'current-plan' : ''}">${plan.planHebrew}</td>
-                
-                <!-- Current Savings Column -->
                 <td class="${savings > 0 ? 'positive-savings' : savings < 0 ? 'negative-savings' : ''}">
                     ${currentPlanPrice !== null ? `₪ ${formatNumber(savings)}` : 'לא זמין'}
                 </td>
-
-                <!-- Yearly Savings Estimate Column -->
                 <td class="${yearlySavings > 0 ? 'positive-savings' : yearlySavings < 0 ? 'negative-savings' : ''}">
                     ${currentPlanPrice !== null ? `₪ ${formatNumber(yearlySavings)}` : 'לא זמין'}
                 </td>
-
-                <!-- Three Year Savings Estimate Column -->
                 <td class="${threeYearSavings > 0 ? 'positive-savings' : threeYearSavings < 0 ? 'negative-savings' : ''}">
                     ${currentPlanPrice !== null ? `₪ ${formatNumber(threeYearSavings)}` : 'לא זמין'}
                 </td>
-                
-                <!-- Contact Links -->
                 <td>
                     <div class="contact-links">
                         <a href="#" class="contact-link company-link">יצירת קשר</a>
@@ -124,15 +117,127 @@ document.addEventListener('DOMContentLoaded', function() {
         tableContainer.innerHTML = '';
         tableContainer.appendChild(table);
 
-        console.log('Table created successfully');
+        // Create Chart
+        const canvas = document.getElementById('topPlansChart');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            
+            // Clear the canvas
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Calculate savings for each plan
+            const plansWithSavings = plansArray.map(plan => ({
+                ...plan,
+                savings: currentPlanPrice !== null ? currentPlanPrice - plan.price : 0
+            }));
+
+            // Sort by savings (highest to lowest) and take top 10
+            const top10Plans = plansWithSavings
+                .sort((a, b) => b.savings - a.savings)
+                .slice(0, 10)
+                .reverse();
+
+            const labels = top10Plans.map(plan => plan.planHebrew);
+            const savings = top10Plans.map(plan => plan.savings);
+
+            new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'חסכון (ILS)',
+                        data: savings,
+                        backgroundColor: savings.map(value => 
+                            value > 0 ? 'rgba(75, 192, 192, 0.6)' : 'rgba(255, 99, 132, 0.6)'
+                        ),
+                        borderColor: savings.map(value => 
+                            value > 0 ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'
+                        ),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: 'black',
+                                font: {
+                                    family: "'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
+                                    size: 14
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'עשרת המסלולים המובילים לפי חסכון',
+                            color: 'black',
+                            font: {
+                                family: "'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'black',
+                                drawBorder: true,
+                                borderColor: 'black'
+                            },
+                            ticks: {
+                                color: 'black',
+                                font: {
+                                    family: "'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+                                },
+                                callback: function(value) {
+                                    return '₪' + value.toFixed(2);
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'חסכון (ILS)',
+                                color: 'black',
+                                font: {
+                                    family: "'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'black',
+                                drawBorder: true,
+                                borderColor: 'black'
+                            },
+                            ticks: {
+                                color: 'black',
+                                font: {
+                                    family: "'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+                                }
+                            }
+                        }
+                    },
+                    backgroundColor: 'white'
+                }
+            });
+        }
+
+        console.log('Table and chart created successfully');
 
     } catch (error) {
-        console.error('Error creating table:', error);
+        console.error('Error creating visualizations:', error);
         const tableContainer = document.getElementById('finalPlansTable');
         if (tableContainer) {
             tableContainer.innerHTML = `
                 <div class="error-message">
-                    שגיאה ביצירת הטבלה: ${error.message}
+                    שגיאה ביצירת הטבלה והתרשים: ${error.message}
                     <br>
                     אנא בדקו את קונסול הדפדפן לפרטים נוספים.
                 </div>
