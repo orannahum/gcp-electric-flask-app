@@ -1,87 +1,64 @@
-function initMobileMenu() {
-  const menuToggle = document.querySelector('.menu-toggle');
-  const navLinks = document.querySelector('.nav-links');
-  const header = document.querySelector('.site-header');
+// בדיקה אם Dropzone הוגדר כראוי
+if (typeof Dropzone === 'undefined') {
+  console.error('Dropzone לא נטען כראוי!');
+} else {
+  // השבתת גילוי אוטומטי
+  Dropzone.autoDiscover = false;
 
-  if (!menuToggle || !navLinks || !header) return;
+  document.addEventListener('DOMContentLoaded', function () {
+    const submitBtn = document.getElementById('submitBtn');
 
-  menuToggle.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-    document.body.style.overflow = navLinks.classList.contains('active')
-      ? 'hidden'
-      : '';
-  });
-
-  // Close menu when clicking outside
-  document.addEventListener('click', (e) => {
-    const target = e.target;
-    if (
-      !menuToggle.contains(target) &&
-      !navLinks.contains(target) &&
-      navLinks.classList.contains('active')
-    ) {
-      navLinks.classList.remove('active');
-      document.body.style.overflow = '';
+    // בדיקה שהטופס קיים לפני אתחול
+    const uploadForm = document.getElementById('uploadForm');
+    if (!submitBtn || !uploadForm) {
+      console.error('אלמנט הטופס לא נמצא');
+      return;
     }
-  });
 
-  // Handle resize events
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      if (window.innerWidth > 767) {
-        navLinks.classList.remove('active');
-        document.body.style.overflow = '';
+    // אתחול Dropzone
+    const myDropzone = new Dropzone('#uploadForm', {
+      url: uploadForm.action,
+      acceptedFiles: '.csv',
+      maxFiles: 1,
+      autoProcessQueue: false,
+      addRemoveLinks: true,
+      dictDefaultMessage: 'גרור קובץ CSV לכאן או לחץ להעלאה',
+      dictRemoveFile: 'הסר קובץ',
+      dictFileTooBig: 'הקובץ גדול מדי',
+      dictInvalidFileType: 'סוג קובץ לא חוקי. רק קבצי CSV מותרים',
+    });
+
+    // עדכון כפתור שליחה
+    myDropzone.on('addedfile', function () {
+      submitBtn.disabled = false;
+    });
+
+    myDropzone.on('removedfile', function () {
+      submitBtn.disabled = true;
+    });
+
+    // טיפול באירוע שליחה
+    submitBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (myDropzone.getQueuedFiles().length === 0) {
+        alert('נא להעלות קובץ לפני השליחה');
+        return;
       }
-    }, 250);
+      myDropzone.processQueue();
+    });
+
+    // טיפול בהצלחה
+    myDropzone.on('success', function (file, response) {
+      console.log('העלאה מוצלחת:', response);
+    });
+
+    // טיפול בשגיאה
+    myDropzone.on('error', function (file, errorMessage) {
+      console.error('שגיאת העלאה:', errorMessage);
+      const errorSpan = document.createElement('span');
+      errorSpan.className = 'error-message';
+      errorSpan.textContent = errorMessage;
+      file.previewElement.appendChild(errorSpan);
+    });
   });
 }
-
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', initMobileMenu);
-
-Dropzone.autoDiscover = false;
-
-document.addEventListener('DOMContentLoaded', function () {
-  const submitBtn = document.getElementById('submitBtn');
-
-  const myDropzone = new Dropzone('#uploadForm', {
-    url: document.getElementById('uploadForm').action,
-    acceptedFiles: '.csv',
-    maxFiles: 1,
-    autoProcessQueue: false,
-    addRemoveLinks: true,
-    dictDefaultMessage: 'גרור קובץ CSV לכאן או לחץ להעלאה',
-    dictRemoveFile: 'הסר קובץ',
-    dictFileTooBig: 'הקובץ גדול מדי',
-    dictInvalidFileType: 'סוג קובץ לא חוקי. רק קבצי CSV מותרים',
-  });
-
-  myDropzone.on('addedfile', function () {
-    submitBtn.disabled = false;
-  });
-
-  myDropzone.on('removedfile', function () {
-    submitBtn.disabled = true;
-  });
-
-  submitBtn.addEventListener('click', function (e) {
-    e.preventDefault();
-    myDropzone.processQueue();
-  });
-
-  myDropzone.on('success', function (file, response) {
-    // Handle success - you can redirect or show results here
-    console.log('Upload successful', response);
-  });
-
-  myDropzone.on('error', function (file, errorMessage) {
-    console.error('Upload error:', errorMessage);
-    // Show error message to user
-    const errorSpan = document.createElement('span');
-    errorSpan.className = 'error-message';
-    errorSpan.textContent = errorMessage;
-    file.previewElement.appendChild(errorSpan);
-  });
-});

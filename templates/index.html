@@ -6,7 +6,6 @@
     <title>מחשבון מסלולי חשמל</title>
 
     <link rel="stylesheet" href="../static/css/styles.css" />
-    <script src="../static/js/header.js"></script>
 
     <link
       rel="stylesheet"
@@ -17,6 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
     <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+
     <link
       rel="stylesheet"
       href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css"
@@ -58,39 +58,57 @@
                 beatae consequuntur et consequatur necessitatibus?
               </p>
               <section class="upload-section">
-                <h2 class="english-title">העלאת קובץ CSV</h2>
+                <h2 class="upload-title">העלאת קובץ צריכת חשמל</h2>
             
-                <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm">
-                    <input type="file" name="file" accept=".csv" required>
-                    <div class="meter-selection">
-                      <label>סוג מונה:</label>
-                      <div class="radio-group">
-                          <input type="radio" id="smartMeter" name="meterType" value="Smart Meter" checked required>
-                          <label for="smartMeter">מונה חכם</label>
-                          
-                          <input type="radio" id="regularMeter" name="meterType" value="Simple Meter">
-                          <label for="regularMeter">מונה רגיל</label>
-                      </div>
-                  </div>
-                  <div class="numbers-selection">
-                    <label>בחירת שירותים:</label>
-                    <div class="custom-select">
-                        <button type="button" class="select-button" onclick="toggleDropdown(event)">
-                            בחר שירותים
-                            <span class="arrow-down">▼</span>
-                        </button>
-                        <div class="select-dropdown" style="display: none;">
-                            <div class="option-container">
-                                {% for service in services %}
-                                <label class="option">
-                                    <input type="checkbox" name="services[]" value="{{ service['value'] }}">
-                                    <span class="option-text">{{ service['text'] }}</span>
-                                </label>
-                                {% endfor %}
-                            </div>
+                <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm" class="modern-form">
+                    <div class="file-upload-container">
+                        <label for="fileUpload" class="file-upload-label">
+                            <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                <path d="M12 4L12 16M12 4L8 8M12 4L16 8M4 17L4 19C4 19.5523 4.44772 20 5 20L19 20C19.5523 20 20 19.5523 20 19L20 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span class="upload-text">גרור לכאן את קובץ הצריכה שלך</span>
+                            <span class="upload-hint">או לחץ כדי לבחור קובץ CSV</span>
+                        </label>
+                        <input type="file" id="fileUpload" name="file" accept=".csv" required class="file-upload-input">
+                        <div class="selected-file-info">
+                            <span class="file-name"></span>
+                            <button type="button" class="remove-file" style="display: none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+                                    <path d="M6 18L18 6M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
-                </div>
+                    <div class="meter-selection">
+                        <label>בחר סוג מונה:</label>
+                        <div class="radio-group">
+                            <label class="radio-container">
+                                <input type="radio" id="smartMeter" name="meterType" value="Smart Meter" checked required>
+                                <span class="radio-custom"></span>
+                                <span class="radio-label">מונה חכם</span>
+                            </label>
+                            
+                            <label class="radio-container">
+                                <input type="radio" id="regularMeter" name="meterType" value="Simple Meter">
+                                <span class="radio-custom"></span>
+                                <span class="radio-label">מונה רגיל</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="services-dropdown">
+                        <div class="dropdown-header">
+                            בחירת שירותים:
+                            <button class="hide-button" id="hideDropdown">הסתר</button>
+                        </div>
+                        <div class="dropdown-content" id="dropdownContent">
+                            <!-- Existing checkboxes -->
+                            <label><input type="checkbox" name="service" value="חוט טריפלי"> חוט טריפלי</label>
+                            <label><input type="checkbox" name="service" value="חוט מוביל"> חוט מוביל</label>
+                            <label><input type="checkbox" name="service" value="נקסט דאבל"> נקסט דאבל</label>
+                            <label><input type="checkbox" name="service" value="לקוח אישיראנט"> לקוח אישיראנט</label>
+                        </div>
+                    </div>
+                    
                     <div class="submit-container">
                         <button type="submit" id="submitBtn" class="submit-button">הפק דוח</button>
                         <span class="error-message">{% if error %}{{ error }}{% endif %}</span>
@@ -111,9 +129,13 @@
             </div>
           </div>
         </section>
+        {% if meter_type == "Simple Meter" %}
+<div class="error-message">
+    כרגע המערכת יודעת להיק דוח רק למונה חכם
+</div>
 
-        <!-- Results Section -->
-        {% if results %}
+{% elif results and meter_type == "Smart Meter" %}
+
         <!-- Hidden data elements -->
     <div id="numDays" style="display: none;">{{ results.num_days }}</div>
 
@@ -124,19 +146,19 @@
     <div class="results-container">
         <div class="section top-plans">
             <div class="top-plans-container">
-                <div class="plan-card first">
+                <div class="plan-card first card">
                     <h3>מסלול במקום ה1</h3>
                     <div class="plan-name" data-plan="{{ results.final_top_plans[0].plan }}"></div>
                     <div class="plan-savings" data-price="{{ results.final_top_plans[0]['price(ILS)'] }}"></div>
                 </div>
     
-                <div class="plan-card second">
+                <div class="plan-card second card">
                     <h3>מסלול במקום ה2</h3>
                     <div class="plan-name" data-plan="{{ results.final_top_plans[1].plan }}"></div>
                     <div class="plan-savings" data-price="{{ results.final_top_plans[1]['price(ILS)'] }}"></div>
                 </div>
     
-                <div class="plan-card third">
+                <div class="plan-card third card">
                     <h3>מסלול במקום ה3</h3>
                     <div class="plan-name" data-plan="{{ results.final_top_plans[2].plan }}"></div>
                     <div class="plan-savings" data-price="{{ results.final_top_plans[2]['price(ILS)'] }}"></div>
@@ -258,6 +280,7 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/cooldown.js') }}"></script>
     <script src="{{ url_for('static', filename='js/daily_sum_time_series.js') }}"></script>
@@ -265,6 +288,16 @@
     <script src="{{ url_for('static', filename='js/hourly_bin_chart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/savings_time_series.js') }}"></script>
     <script src="{{ url_for('static', filename='js/services_toggle_dropdown.js') }}"></script>
-    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <script src="{{ url_for('static', filename='js/file-upload.js') }}"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          const dropdown = document.querySelector('.select-dropdown');
+          if (dropdown) {
+              console.log("תפריט השירותים נטען:", dropdown);
+          } else {
+              console.error("תפריט השירותים לא נטען!");
+          }
+      });
+      </script>
   </body>
 </html>

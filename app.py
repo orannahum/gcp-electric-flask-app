@@ -295,7 +295,8 @@ def upload_file():
             # Return the rendered template with results
             return render_template('index.html',
                                 results=results_dict,
-                                plans_translate=plans_translate_to_hebrew)
+                                plans_translate=plans_translate_to_hebrew,
+                                meter_type=meter_type,)
 
         except pd.errors.EmptyDataError:
             logger.error("Empty CSV file uploaded")

@@ -31,35 +31,54 @@ document.addEventListener('DOMContentLoaded', function() {
         const moreContent = document.getElementById('moreContent');
         
         if (showMoreButton && moreContent) {
+            // Get saved state from localStorage
+            const isContentVisible = localStorage.getItem('moreContentVisible') === 'true';
+            
+            // Set initial state based on localStorage
+            moreContent.style.display = isContentVisible ? 'block' : 'none';
+            showMoreButton.textContent = isContentVisible 
+                ? 'הסתר מידע'
+                : 'תראה לי עוד מידע וגרפים על הצריכת חשמל שלי';
+            
+            // Initialize charts if content is visible
+            if (isContentVisible) {
+                initializeCharts(resultsData);
+            }
+
             showMoreButton.addEventListener('click', function() {
-                if (moreContent.style.display === 'block') {
-                    moreContent.style.display = 'none';
-                    showMoreButton.textContent = 'תראה לי עוד מידע וגרפים על הצריכת חשמל שלי';
-                } else {
-                    moreContent.style.display = 'block';
-                    showMoreButton.textContent = 'הסתר מידע';
-                    
-                    // Initialize charts when content is shown
-                    if (typeof initDailySumTimeSeries === 'function') {
-                        initDailySumTimeSeries(resultsData);
-                    }
-                    if (typeof initHourlyBinChart === 'function') {
-                        initHourlyBinChart(resultsData.hourly_agg);
-                    }
-                    if (typeof initSavingsTimeSeries === 'function') {
-                        initSavingsTimeSeries(resultsData.diff_saving);
-                    }
-                    if (typeof initFinalPlansTable === 'function') {
-                        initFinalPlansTable(resultsData);
-                    }
+                const willBeVisible = moreContent.style.display !== 'block';
+                moreContent.style.display = willBeVisible ? 'block' : 'none';
+                showMoreButton.textContent = willBeVisible 
+                    ? 'הסתר מידע'
+                    : 'תראה לי עוד מידע וגרפים על הצריכת חשמל שלי';
+                
+                // Save state to localStorage
+                localStorage.setItem('moreContentVisible', willBeVisible);
+                
+                // Initialize charts when showing content
+                if (willBeVisible) {
+                    initializeCharts(resultsData);
                 }
             });
-            
-            // Ensure content is hidden initially
-            moreContent.style.display = 'none';
         }
 
     } catch (error) {
         console.error('Error initializing visualizations:', error);
     }
 });
+
+// Helper function to initialize all charts
+function initializeCharts(resultsData) {
+    if (typeof initDailySumTimeSeries === 'function') {
+        initDailySumTimeSeries(resultsData);
+    }
+    if (typeof initHourlyBinChart === 'function') {
+        initHourlyBinChart(resultsData.hourly_agg);
+    }
+    if (typeof initSavingsTimeSeries === 'function') {
+        initSavingsTimeSeries(resultsData.diff_saving);
+    }
+    if (typeof initFinalPlansTable === 'function') {
+        initFinalPlansTable(resultsData);
+    }
+}
