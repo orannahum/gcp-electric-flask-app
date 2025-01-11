@@ -21,7 +21,7 @@ new Chart(ctx, {
             borderColor: 'rgb(75, 192, 192)',
             backgroundColor: 'rgba(75, 192, 192, 0.2)',
             tension: 0.1,
-            fill: true
+            fill: true,
         }]
     },
     options: {
@@ -63,3 +63,4 @@ new Chart(ctx, {
         }
     }
 });
+Chart.defaults.color = 'white';

@@ -11,6 +11,9 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/styles.css') }}"
     />
+      <link rel="stylesheet" 
+      href="{{ url_for('static', filename='css/header.css') }}"
+    >
     <script src="{{ url_for('static', filename='js/header.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
@@ -25,6 +28,11 @@
   </head>
   <body>
     <header class="site-header">
+      <button class="hamburger">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
       <nav class="nav-container">
         <div class="logo">
           <img
@@ -33,7 +41,8 @@
             class="logo-image"
           />
         </div>
-        <ul class="nav-links">
+
+        <ul class="nav-links nav-menu">
           <li><a href="{{ url_for('index') }}" class="nav-link">מחשבון מסלולי חשמל</a></li>
           <li><a href="{{ url_for('about') }}" class="nav-link">אודות</a></li>
           <li><a href="{{ url_for('videos') }}" class="nav-link">סרטוני הדרכה</a></li>
@@ -47,18 +56,19 @@
       <div class="container">
         <section class="hero-section">
           <h1 class="main-title">מחשבון מסלולי חשמל</h1>
+          <div class="hero-section-text">
 
+            <h2>מצאו את המסלול המוזל ביותר בהתאם לשימוש האישי שלכם!</h2>
+            <p>
+              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Non
+              odio architecto suscipit facere possimus iste officiis dolore
+              ducimus dicta deserunt! Fugit accusamus autem nulla praesentium
+              beatae consequuntur et consequatur necessitatibus?
+            </p>
+          </div>
           <div class="video-wrapper">
             <div class="video-text">
-              <h2>מצאו את המסלול המוזל ביותר בהתאם לשימוש האישי שלכם!</h2>
-              <p>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Non
-                odio architecto suscipit facere possimus iste officiis dolore
-                ducimus dicta deserunt! Fugit accusamus autem nulla praesentium
-                beatae consequuntur et consequatur necessitatibus?
-              </p>
               <section class="upload-section">
-                <h2 class="upload-title">העלאת קובץ צריכת חשמל</h2>
             
                 <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm" class="modern-form">
                     <div class="file-upload-container">
@@ -98,7 +108,6 @@
                     <div class="services-dropdown">
                         <div class="dropdown-header">
                             בחירת שירותים:
-                            <button class="hide-button" id="hideDropdown">הסתר</button>
                         </div>
                         <div class="dropdown-content" id="dropdownContent">
                             <!-- Existing checkboxes -->
@@ -128,6 +137,7 @@
               </iframe>
             </div>
           </div>
+          
         </section>
         {% if meter_type == "Simple Meter" %}
 <div class="error-message">
@@ -208,26 +218,20 @@
               </div>
     
                 <div class="section charts">
-                    <div class="chart-wrapper">
-                        <h2>צריכה יומית</h2>
-                        <div class="chart-container">
-                            <canvas id="dailyConsumptionChart"></canvas>
-                        </div>
-                    </div>
-    
-                    <div class="chart-wrapper">
-                        <h2>תרשים צריכה שעתית ממוצעת</h2>
-                        <div class="chart-container">
-                            <canvas id="hourlyConsumptionChart"></canvas>
-                        </div>
-                    </div>
-    
-                    <div class="chart-wrapper">
-                        <h2>חיסכון לעומת חברת חשמל לאורך זמן</h2>
-                        <div class="chart-container">
-                            <canvas id="savingsTimeSeriesChart"></canvas>
-                        </div>
-                    </div>
+                  <h2>צריכה יומית</h2>
+                  <div class="chart-container">
+                      <canvas id="dailyConsumptionChart"></canvas>
+                  </div>
+
+                  <h2>תרשים צריכה שעתית ממוצעת</h2>
+                  <div class="chart-container">
+                      <canvas id="hourlyConsumptionChart"></canvas>
+                  </div>
+
+                  <h2>חיסכון לעומת חברת חשמל לאורך זמן</h2>
+                  <div class="chart-container">
+                      <canvas id="savingsTimeSeriesChart"></canvas>
+                  </div>
                 </div>
     
                 <div class="section plans-comparison">
@@ -289,15 +293,6 @@
     <script src="{{ url_for('static', filename='js/savings_time_series.js') }}"></script>
     <script src="{{ url_for('static', filename='js/services_toggle_dropdown.js') }}"></script>
     <script src="{{ url_for('static', filename='js/file-upload.js') }}"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-          const dropdown = document.querySelector('.select-dropdown');
-          if (dropdown) {
-              console.log("תפריט השירותים נטען:", dropdown);
-          } else {
-              console.error("תפריט השירותים לא נטען!");
-          }
-      });
-      </script>
+    
   </body>
 </html>

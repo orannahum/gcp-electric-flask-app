@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 labels: hours,
                 datasets: [{
+                    color: 'white',
                     label: 'צריכת חשמל (קוט"ש)',
                     data: values,
                     backgroundColor: backgroundColors,
@@ -140,3 +141,4 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('שגיאה בעיבוד הנתונים:', error);
     }
 });
+Chart.defaults.color = 'white';

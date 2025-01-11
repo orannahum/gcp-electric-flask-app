@@ -1,7 +1,7 @@
 /* Base variables */
 :root {
   /* Primary Electric Colors - Darkened */
-  --electric-blue: #00d4e4; /* Darker than previous #00f0ff */
+  --electric-blue: #007982; /* Darker than previous #00f0ff */
   --electric-purple: #9600d4; /* Darker than previous #b400ff */
   --electric-pink: #d400c4; /* Darker than previous #ff00e4 */
   --neon-yellow: #e6de00; /* Darker than previous #fff700 */
@@ -155,6 +155,9 @@ body {
 .nav-link:hover::after {
   width: 100%;
 }
+.upload-text {
+  display: block;
+}
 
 /* Main Content */
 .main-content {
@@ -205,7 +208,6 @@ body {
   border: none;
 }
 .video-wrapper .video-text {
-  padding: 1rem;
   direction: rtl;
 }
 .video-wrapper .video-text h2 {
@@ -250,6 +252,7 @@ body {
   cursor: pointer;
   transition: var(--transition);
   justify-self: start;
+  width: 100%;
 }
 
 .submit-button:hover {
@@ -305,7 +308,13 @@ body {
   padding-top: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
-
+.services-dropdown {
+  margin-bottom: 10px;
+}
+.services-dropdown .dropdown-content {
+  display: flex;
+  gap: 10px;
+}
 /* Responsive Design */
 @media (min-width: 640px) {
   .upload-form {
@@ -345,6 +354,10 @@ body {
 }
 
 @media (max-width: 767px) {
+  :root {
+    --container-padding: 8px
+
+  }
   .menu-toggle {
     display: block;
     background: rgba(0, 0, 0, 0.5);
@@ -362,21 +375,10 @@ body {
     transition: var(--transition);
   }
 
-  .nav-links {
-    position: fixed;
-    top: var(--header-height);
-    right: -100%;
-    width: 100%;
-    height: calc(100vh - var(--header-height));
-    background-color: var(--white);
+   .dropdown-content {
     flex-direction: column;
-    padding: 2rem;
-    transition: var(--transition);
-  }
-
-  .nav-links.active {
-    right: 0;
-  }
+    align-items: flex-start;
+   }
   .video-wrapper .video-text :is(h2, p) {
     text-align: center;
   }
@@ -453,11 +455,6 @@ body {
 }
 
 
-/* Container Styling */
-.results-container {
-  width: 80%;
-  margin: auto;
-}
 
 /* Cards Container */
 .top-plans-container {
@@ -470,7 +467,7 @@ body {
 /* Card Styling */
 .plan-card {
   width: 30%;
-  height: 250px;  /* Fixed height */
+  height: 200px;  /* Fixed height */
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -511,11 +508,11 @@ body {
   font-size: 18px;
   font-weight: bold;
   color: white;
-  background-color: #007bff;
+  background-color: #2e3946;
   border: none;
   border-radius: 8px;
   text-align: center;
-  margin: 0 auto;
+  margin: 10px auto;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
@@ -543,22 +540,19 @@ body {
   width: 100%;
   height: 500px;
   position: relative;
-  background-color: white;
-  border: 1px solid black;
   border-radius: var(--border-radius);
+  margin-bottom: 20px
 }
 
 /* Canvas - Ensure it Fills the Container */
 .chart-container canvas {
   width: 100% !important; 
   height: 100% !important;
-  background-color: white;
+  background-color: var(--surface-color);
+  border-radius: 20px;
+  padding: 20px;
 }
 
-#topPlansChart {
-  background-color: white;
-  border: 1px solid black;
-}
 
 /* ADD THESE NEW STYLES */
 
@@ -568,26 +562,33 @@ body {
   max-width: 1200px;
   margin: 2rem auto;
   border-collapse: collapse;
-  background-color: white;
-  border: 2px solid #1a1a1a;
   font-size: 0.9rem;
   box-shadow: var(--shadow-md);
+  color: white;
 }
 
 .plans-table th,
 .plans-table td {
-    border: 1px solid #2d2d2d;
-    padding: 0.5rem;
+    border: 1px solid #cdcdcd;
+    padding: 4px;
     text-align: center;
-    max-width: 100px;
+}
+
+/* Separate styles for td to keep ellipsis */
+.plans-table td {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #1a1a1a;
 }
 
-.plans-table thead {
-  background-color: #2d2d2d;
+/* New styles for th to allow wrapping */
+.plans-table th {
+    white-space: normal;
+    overflow: visible;
+    word-wrap: break-word;
+    min-height: 50px; /* Ensures enough space for 2 rows */
+    vertical-align: middle;
+    color:white;
 }
 
 .plans-table th {
@@ -598,11 +599,11 @@ body {
 }
 
 .plans-table tbody tr:nth-child(even) {
-  background-color: #f8f9fa;
+  background-color: var(--surface-color);
 }
 
 .plans-table tbody tr:nth-child(odd) {
-  background-color: white;
+  background-color: var(--card-color);
 }
 
 .plans-table tbody tr:hover {
@@ -611,8 +612,14 @@ body {
 }
 
 .current-plan-row {
-  background-color: #e3f2fd !important;
+  background-color: #ff4e60 !important;
   border-left: 4px solid #1976d2 !important;
+}
+
+.hero-section-text {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 /* Contact Links in Table */
@@ -658,6 +665,27 @@ body {
   .plans-table td {
       padding: 2px;
   }
+
+  /* Cards Container */
+  .top-plans-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .top-plans-container .card{
+    width: 100%;
+    max-width: 100%;
+    display: flex;  
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Canvas - Ensure it Fills the Container */
+.chart-container canvas {
+ padding: 10px;
+}
 }
 
 /* הוספה בסוף הקובץ CSS */
@@ -741,10 +769,6 @@ body {
   color: var(--text-primary);  /* Darker text color for table cells */
 }
 
-.plans-table th {
-  color: var(--text-primary);
-  background: var(--bg-secondary);
-}
 
 
 .card {
@@ -780,19 +804,13 @@ body {
 }
 
 #finalPlansTable {
-    color: black;
+    overflow: auto;
 }
 
-/* If there are specific table elements that need the styling */
-#finalPlansTable table,
-#finalPlansTable td,
-#finalPlansTable th {
-    color: black;
-}
 
 .modern-form {
     max-width: 600px;
-    margin: 0 auto;
+    margin: 10px auto;
 }
 
 .file-upload-container {
@@ -883,14 +901,14 @@ body {
 
 .radio-label {
     font-size: 1rem;
-    color: #495057;
+    color: white;
 }
 
 .dropdown-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    padding-bottom: 10px;
 }
 
 .hide-button {

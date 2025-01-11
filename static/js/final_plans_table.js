@@ -105,8 +105,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>
                     <div class="contact-links">
                         <a href="#" class="contact-link company-link">יצירת קשר</a>
-                        <br>
-                        <a href="#" class="contact-link rep-link">לחזרת נציג</a>
                     </div>
                 </td>
             `;
@@ -141,11 +139,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const labels = top10Plans.map(plan => plan.planHebrew);
             const savings = top10Plans.map(plan => plan.savings);
 
-            new Chart(canvas, {
+            const chart = new Chart(canvas, {
                 type: 'bar',
+                
                 data: {
+                    
                     labels: labels,
                     datasets: [{
+                        color: 'white',
                         label: 'חסכון (ILS)',
                         data: savings,
                         backgroundColor: savings.map(value => 
@@ -160,6 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    
                     plugins: {
                         legend: {
                             display: true,
@@ -186,11 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: {
-                                color: 'black',
-                                drawBorder: true,
-                                borderColor: 'black'
-                            },
+                            
                             ticks: {
                                 color: 'black',
                                 font: {
@@ -211,17 +209,17 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         },
                         x: {
-                            grid: {
-                                color: 'black',
-                                drawBorder: true,
-                                borderColor: 'black'
-                            },
-                            ticks: {
-                                color: 'black',
-                                font: {
-                                    family: "'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
-                                }
-                            }
+                            // grid: {
+                            //     color: 'black',
+                            //     drawBorder: true,
+                            //     borderColor: 'black'
+                            // },
+                            // ticks: {
+                            //     color: 'black',
+                            //     font: {
+                            //         family: "'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+                            //     }
+                            // }
                         }
                     },
                     backgroundColor: 'white'
@@ -245,3 +243,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+Chart.defaults.color = 'white';

@@ -90,23 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
 
-        // const plans_translate_to_hebrew = {
-        //     'חברת חשמל': 'plan_hevrat_hashmal1_diff',
-        //     'סלקום 1': 'plan_cellcom1_diff',
-        //     'סלקום 2': 'plan_cellcom2_diff',
-        //     'סלקום 3': 'plan_cellcm3_diff',
-        //     'סלקום 4': 'plan_cellcom4_diff',
-        //     'פזגז': 'plan_paz1_diff',
-        //     'אלקטרה 1': 'plan_electra_power1_diff',
-        //     'אלקטרה 2': 'plan_electra_power2_diff',
-        //     'אלקטרה 3': 'plan_electra_power3_diff',
-        //     'הוט 1': 'plan_hot1_diff',
-        //     'הוט 2': 'plan_hot2_diff',
-        //     'הוט 3': 'plan_hot3_diff',
-        //     'הוט 4': 'plan_hot4_diff',
-        //     'הוט 5': 'plan_hot5_diff',
-        //     'הוט 6': 'plan_hot6_diff'
-        // };
         const translationsElement = document.getElementById('plansTranslations');
         const plans_translate_to_hebrew = JSON.parse(translationsElement.textContent);
         const updated_plans_translate_to_hebrew = Object.entries(plans_translate_to_hebrew).reduce((acc, [key, value]) => {
@@ -119,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const hebrewLabel = Object.keys(updated_plans_translate_to_hebrew).find(key => updated_plans_translate_to_hebrew[key] === plan) || plan.replace('plan_', '').replace('_diff', '');
 
             return {
+                color: 'white',
                 label: hebrewLabel,
                 data: Object.entries(data).map(([timestamp, value]) => ({
                     x: new Date(timestamp),
@@ -196,24 +180,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             display: true,
                             text: 'תאריך'
                         },
-                        grid: {
-                            display: true,
-                            drawBorder: true,
-                            drawOnChartArea: true,
-                            drawTicks: true,
-                        }
+                        
                     },
                     y: {
                         title: {
                             display: true,
                             text: 'חיסכון (₪)'
                         },
-                        grid: {
-                            display: true,
-                            drawBorder: true,
-                            drawOnChartArea: true,
-                            drawTicks: true,
-                        },
+                      
                         ticks: {
                             callback: function(value) {
                                 return value.toFixed(2) + '₪';
@@ -245,3 +219,4 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('שגיאה בעיבוד הנתונים:', error);
     }
 });
+Chart.defaults.color = 'white';

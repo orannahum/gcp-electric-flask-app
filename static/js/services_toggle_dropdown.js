@@ -1,7 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const selectButton = document.querySelector('.select-button');
-    const dropdown = document.querySelector('.select-dropdown');
-    const hideButton = document.querySelector('.hide-dropdown-btn');
     const checkboxes = document.querySelectorAll('.option input[type="checkbox"]');
     const selectedCountSpan = document.querySelector('.selected-count');
 
@@ -10,13 +7,13 @@ document.addEventListener('DOMContentLoaded', function() {
         selectedCountSpan.textContent = selectedCount;
     }
 
-    selectButton.addEventListener('click', () => {
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    });
+    // selectButton.addEventListener('click', () => {
+    //     dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    // });
 
-    hideButton.addEventListener('click', () => {
-        dropdown.style.display = 'none';
-    });
+    // hideButton.addEventListener('click', () => {
+    //     dropdown.style.display = 'none';
+    // });
 
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', updateSelectedCount);

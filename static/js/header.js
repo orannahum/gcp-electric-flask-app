@@ -62,3 +62,36 @@ if (typeof Dropzone === 'undefined') {
     });
   });
 }
+
+// Hamburger Menu Implementation
+document.addEventListener('DOMContentLoaded', function() {
+  const hamburger = document.querySelector('.hamburger');
+  const navMenu = document.querySelector('*.nav-menu');
+  
+  if (!hamburger || !navMenu) {
+    console.error('Navigation elements not found');
+    return;
+  }
+
+  // Toggle menu on hamburger click
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
+  });
+
+  // Close menu when clicking a nav link
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('active');
+      navMenu.classList.remove('active');
+    });
+  });
+
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 750) {
+      hamburger.classList.remove('active');
+      navMenu.classList.remove('active');
+    }
+  });
+});
